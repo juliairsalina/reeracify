@@ -568,7 +568,6 @@ def run_rule_based_scoring(
     resume: dict[str, Any],
     target_role: str,
     target_level: str,
-    languagetool_url: str,
 ) -> dict[str, Any]:
     """
     Main rule-based scoring pipeline.
