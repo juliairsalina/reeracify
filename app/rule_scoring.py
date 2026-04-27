@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-import requests
+import language_tool_python
 
 
 # ============================================================
@@ -269,38 +269,6 @@ def match_keywords(resume: dict[str, Any], expected_keywords: list[str]) -> dict
 
     Checks whether expected role keywords appear anywhere in the resume.
 
-    Example:
-        Data Analyst might expect:
-        python, sql, excel, dashboard, visualization
-
-    Output:
-        present_keywords
-        missing_keywords
-    """
-    resume_text = normalize_text(collect_resume_text(resume))
-
-    present = []
-    missing = []
-
-    for keyword in expected_keywords:
-        keyword_normalized = normalize_text(keyword)
-
-        if keyword_normalized in resume_text:
-            present.append(keyword)
-        else:
-            missing.append(keyword)
-
-    return {
-        "present_keywords": present,
-        "missing_keywords": missing,
-    }
-
-def match_keywords(resume: dict[str, Any], expected_keywords: list[str]) -> dict[str, list[str]]:
-    """
-    5) Keyword matching rule
-
-    Checks whether expected role keywords appear anywhere in the resume.
-
     Matching logic:
         1) Single-word keyword uses word boundary matching.
            Example:
@@ -326,10 +294,8 @@ def match_keywords(resume: dict[str, Any], expected_keywords: list[str]) -> dict
         keyword_normalized = normalize_text(keyword)
 
         if " " in keyword_normalized:
-            # Multi-word phrase match
             found = keyword_normalized in resume_text
         else:
-            # Single-word exact-ish match using word boundaries
             pattern = r"\b" + re.escape(keyword_normalized) + r"\b"
             found = re.search(pattern, resume_text) is not None
 
@@ -342,7 +308,6 @@ def match_keywords(resume: dict[str, Any], expected_keywords: list[str]) -> dict
         "present_keywords": present,
         "missing_keywords": missing,
     }
-
 
 def has_measurable_evidence(text: str) -> bool:
     """
@@ -434,70 +399,71 @@ def detect_weak_phrases(resume: dict[str, Any]) -> list[dict[str, str]]:
 
 def check_grammar_with_languagetool(
     resume: dict[str, Any],
-    languagetool_url: str,
+    language: str = "en-US",
 ) -> list[dict[str, Any]]:
     """
     8) Grammar/spelling rule
 
-    Uses LanguageTool API to check each bullet.
+    Uses local language_tool_python instead of the public LanguageTool API.
 
-    For MVP, we only keep a simplified summary:
+    This avoids:
+        - paid API calls
+        - public API rate limits
+        - one external request per bullet
+
+    Requirements:
+        - pip install language-tool-python
+        - Java installed locally
+
+    Output:
         - bullet ID
+        - original bullet text
         - issue count
-        - short messages
-        - suggestions
-
-    This makes it easier for the frontend to show simple grammar flags.
+        - simplified issue list
     """
     grammar_flags: list[dict[str, Any]] = []
 
-    if not languagetool_url:
-        return grammar_flags
+    try:
+        tool = language_tool_python.LanguageTool(language)
+    except Exception as exc:
+        return [
+            {
+                "id": "language_tool_setup_error",
+                "text": "",
+                "issue_count": 0,
+                "issues": [],
+                "warning": f"Failed to start local LanguageTool: {str(exc)}",
+            }
+        ]
 
     for bullet in get_all_bullets(resume):
         text = bullet["text"]
 
         try:
-            response = requests.post(
-                languagetool_url,
-                data={
-                    "text": text,
-                    "language": "en-US",
-                },
-                timeout=8,
-            )
-            response.raise_for_status()
-            data = response.json()
-
-        except requests.RequestException:
+            matches = tool.check(text)
+        except Exception as exc:
             grammar_flags.append(
                 {
                     "id": bullet["id"],
                     "text": text,
                     "issue_count": 0,
                     "issues": [],
-                    "warning": "LanguageTool check failed for this bullet.",
+                    "warning": f"Local LanguageTool check failed: {str(exc)}",
                 }
             )
             continue
-
-        matches = data.get("matches", [])
 
         if matches:
             simplified_issues = []
 
             for match in matches[:3]:
-                replacements = match.get("replacements", [])
-
                 simplified_issues.append(
                     {
-                        "message": match.get("message", ""),
-                        "short_message": match.get("shortMessage", ""),
-                        "suggestions": [
-                            item.get("value")
-                            for item in replacements[:3]
-                            if item.get("value")
-                        ],
+                        "message": match.message,
+                        "short_message": getattr(match, "short_message", ""),
+                        "rule_id": getattr(match, "rule_id", getattr(match, "ruleId", "")),
+                        "category": str(match.category),
+                        "suggestions": match.replacements[:3],
                     }
                 )
 
@@ -510,6 +476,7 @@ def check_grammar_with_languagetool(
                 }
             )
 
+    tool.close()
     return grammar_flags
 
 
@@ -642,7 +609,7 @@ def run_rule_based_scoring(
     weak_phrase_flags = detect_weak_phrases(resume)
 
     # 8) Run LanguageTool grammar/spelling check
-    grammar_flags = check_grammar_with_languagetool(resume, languagetool_url)
+    grammar_flags = check_grammar_with_languagetool(resume)
 
     # 9) Calculate final ATS score percentage
     ats_score = calculate_ats_score(
