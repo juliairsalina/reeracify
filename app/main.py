@@ -12,6 +12,8 @@ from app.evaluation_agent import evaluate_resume_with_agent
 from app.rewrite_agent import rewrite_bullet_with_agent
 from app.rule_scoring import run_rule_based_scoring
 
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # ============================================================
 # File path
@@ -33,6 +35,13 @@ app = FastAPI(
     version="0.1.0",
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ============================================================
 # Type aliases
@@ -332,7 +341,7 @@ def evaluate_file() -> dict[str, Any]:
 
         return run_full_evaluation_pipeline(
             resume_input=resume_input,
-            run_agent=True,
+            run_agent=False,
         )
 
     except Exception as exc:

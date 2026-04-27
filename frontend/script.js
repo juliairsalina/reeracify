@@ -73,7 +73,6 @@ const closeRewriteModalBtn = document.getElementById("closeRewriteModalBtn");
 let latestEvaluationData = null;
 let latestRuleBasedSignals = null;
 let latestEvaluationAgentResult = null;
-let latestResume = null;
 
 let selectedBullet = {
   id: "",
@@ -85,7 +84,7 @@ let selectedRewriteSuggestion = "";
 
 // ============================================================
 // Role / level data
-// Keep this aligned with your backend rubric CSV.
+// Keep this aligned with backend role_level_rubrics.csv
 // ============================================================
 
 const jobData = {
@@ -112,10 +111,66 @@ const jobData = {
 
 
 // ============================================================
-// UI setup helpers
+// Basic helpers
+// ============================================================
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function showError(message) {
+  console.error(message);
+  alert(message);
+}
+
+function showDashboard() {
+  if (landing) landing.classList.add("hidden");
+  if (dashboard) dashboard.classList.remove("hidden");
+  if (bottomMetrics) bottomMetrics.classList.remove("hidden");
+}
+
+function updatePreview() {
+  if (!previewPaper || !editorContent) return;
+  previewPaper.innerHTML = editorContent.innerHTML;
+}
+
+function setGauge(score) {
+  const progress = document.querySelector(".semi-progress");
+  if (!progress) return;
+
+  const safeScore = Math.max(0, Math.min(Number(score) || 0, 100));
+  progress.style.clipPath = `inset(0 ${100 - safeScore}% 0 0)`;
+}
+
+function getSelectedTargetRole() {
+  return (
+    roleSelect?.value ||
+    latestRuleBasedSignals?.rubric_used?.target_role ||
+    "Data Analyst"
+  );
+}
+
+function getSelectedTargetLevel() {
+  return (
+    levelSelect?.value ||
+    latestRuleBasedSignals?.rubric_used?.target_level ||
+    "Entry-level"
+  );
+}
+
+
+// ============================================================
+// Dropdown setup
 // ============================================================
 
 function loadRoles() {
+  if (!categorySelect || !roleSelect || !levelSelect) return;
+
   roleSelect.innerHTML = '<option value="">Select Role</option>';
   levelSelect.innerHTML = '<option value="">Select Level</option>';
 
@@ -128,6 +183,8 @@ function loadRoles() {
 }
 
 function loadLevels() {
+  if (!categorySelect || !roleSelect || !levelSelect) return;
+
   levelSelect.innerHTML = '<option value="">Select Level</option>';
 
   const levels = jobData[categorySelect.value]?.[roleSelect.value];
@@ -138,19 +195,10 @@ function loadLevels() {
   });
 }
 
-function showDashboard() {
-  landing.classList.add("hidden");
-  dashboard.classList.remove("hidden");
-  bottomMetrics.classList.remove("hidden");
-}
 
-function setGauge(score) {
-  const progress = document.querySelector(".semi-progress");
-  if (!progress) return;
-
-  const safeScore = Math.max(0, Math.min(Number(score) || 0, 100));
-  progress.style.clipPath = `inset(0 ${100 - safeScore}% 0 0)`;
-}
+// ============================================================
+// Loading state
+// ============================================================
 
 function setLoadingState(message = "Analyzing resume...") {
   showDashboard();
@@ -186,45 +234,25 @@ function setLoadingState(message = "Analyzing resume...") {
   lengthScore.textContent = "0";
 }
 
-function updatePreview() {
-  previewPaper.innerHTML = editorContent.innerHTML;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function showError(message) {
-  console.error(message);
-  alert(message);
-}
-
-function getSelectedTargetRole() {
-  return roleSelect.value || latestRuleBasedSignals?.rubric_used?.target_role || "";
-}
-
-function getSelectedTargetLevel() {
-  return levelSelect.value || latestRuleBasedSignals?.rubric_used?.target_level || "";
-}
-
 
 // ============================================================
-// Backend calls
+// Backend call helper
 // ============================================================
 
 async function callBackend(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
+  const fetchOptions = {
+    method: options.method || "GET",
+    ...options
+  };
+
+  if (options.body) {
+    fetchOptions.headers = {
       "Content-Type": "application/json",
       ...(options.headers || {})
-    },
-    ...options
-  });
+    };
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, fetchOptions);
 
   if (!response.ok) {
     let detail = "";
@@ -242,6 +270,11 @@ async function callBackend(path, options = {}) {
   return response.json();
 }
 
+
+// ============================================================
+// Backend endpoint functions
+// ============================================================
+
 async function evaluateFromFinalJson() {
   setLoadingState("Reading sample/final.json...");
 
@@ -253,7 +286,7 @@ async function evaluateFromFinalJson() {
 }
 
 async function reevaluateFromFinalJson() {
-  setLoadingState("Reevaluating updated sample/final.json...");
+  setLoadingState("Reevaluating sample/final.json...");
 
   const data = await callBackend("/reevaluate-file", {
     method: "POST"
@@ -277,7 +310,6 @@ async function requestRewriteForBullet(bulletId, bulletText) {
 
   selectedBulletIdInput.value = bulletId;
   selectedBulletText.textContent = bulletText;
-
   rewriteSuggestionsBox.innerHTML = "<p>Generating rewrite suggestions...</p>";
   acceptRewriteBtn.disabled = true;
 
@@ -299,9 +331,10 @@ async function requestRewriteForBullet(bulletId, bulletText) {
     });
 
     renderRewriteSuggestions(data);
-
   } catch (error) {
-    rewriteSuggestionsBox.innerHTML = `<p class="status-message error">${escapeHtml(error.message)}</p>`;
+    rewriteSuggestionsBox.innerHTML = `
+      <p class="status-message error">${escapeHtml(error.message)}</p>
+    `;
   }
 }
 
@@ -336,7 +369,6 @@ async function acceptRewrite() {
     } else {
       await reevaluateFromFinalJson();
     }
-
   } catch (error) {
     acceptRewriteBtn.disabled = false;
     showError(error.message);
@@ -355,27 +387,6 @@ async function ignoreRewrite() {
   closeRewriteModal();
 }
 
-async function saveManualEdits() {
-  // ============================================================
-  // Manual save note:
-  // This function requires converting edited HTML back to JSON.
-  // For now, the editor renders backend final.json data as HTML.
-  // If you want true manual editing/save, the frontend should either:
-  // 1. keep a structured latestResume object and update bullets in state, or
-  // 2. use form inputs/textareas instead of plain HTML.
-  //
-  // Current safe behavior:
-  // We tell the user to accept rewrite suggestions for automatic saving.
-  // Full manual save can be added later once preprocessing/frontend state
-  // format is finalized.
-  // ============================================================
-
-  alert(
-    "Manual save is not fully connected yet. " +
-    "For now, use rewrite suggestions and Accept Suggestion to save into sample/final.json."
-  );
-}
-
 
 // ============================================================
 // Preprocessing placeholder
@@ -385,61 +396,19 @@ async function runPreprocessingPlaceholder(file) {
   // ============================================================
   // TODO: PREPROCESSING INTEGRATION
   //
-  // Intended future flow:
-  // 1. Frontend uploads PDF/DOC/DOCX.
-  // 2. Preprocessing extracts resume content.
-  // 3. Preprocessing converts it into structured JSON.
-  // 4. Preprocessing saves/outputs this file:
-  //      sample/final.json
-  // 5. Backend /evaluate-file reads sample/final.json.
-  //
-  // Expected final.json structure:
-  // {
-  //   "target_role": "Data Analyst",
-  //   "target_level": "Entry-level",
-  //   "name": "Julia Irsalina",
-  //   "email": "example@email.com",
-  //   "phone": "010-0000-0000",
-  //   "education": [
-  //     {
-  //       "school": "Korea University",
-  //       "degree": "Bachelor of Science",
-  //       "field": "Data Science",
-  //       "start_date": "2023",
-  //       "end_date": "2027",
-  //       "gpa": "3.86/4.50"
-  //     }
-  //   ],
-  //   "experience": [
-  //     {
-  //       "company": "Company Name",
-  //       "role": "Role Name",
-  //       "start_date": "",
-  //       "end_date": "",
-  //       "bullets": [
-  //         "Analyzed survey data using Excel."
-  //       ]
-  //     }
-  //   ],
-  //   "projects": [
-  //     {
-  //       "name": "Project Name",
-  //       "technologies": ["Python", "FastAPI"],
-  //       "bullets": [
-  //         "Built a resume scoring backend using rule-based checks and agents."
-  //       ]
-  //     }
-  //   ],
-  //   "skills": ["Python", "SQL", "FastAPI"],
-  //   "awards": []
-  // }
+  // Intended final flow:
+  // frontend uploads resume file
+  // -> preprocessing extracts and structures resume
+  // -> preprocessing writes sample/final.json
+  // -> backend /evaluate-file reads sample/final.json
   //
   // Current temporary behavior:
-  // - We do NOT send the uploaded file to backend yet.
-  // - We assume sample/final.json already exists in backend.
-  // - Upload button simply triggers /evaluate-file.
+  // preprocessing is not ready yet.
+  // Upload only triggers /evaluate-file.
+  // So make sure sample/final.json already exists manually.
   //
-  // Later, replace this placeholder with:
+  // Later expected preprocessing call:
+  //
   // const formData = new FormData();
   // formData.append("resume", file);
   // formData.append("target_role", roleSelect.value);
@@ -450,29 +419,32 @@ async function runPreprocessingPlaceholder(file) {
   //   body: formData
   // });
   //
-  // Then call:
+  // Then:
   // await evaluateFromFinalJson();
   // ============================================================
 
-  console.log("Preprocessing placeholder received file:", file?.name);
+  console.log("Preprocessing placeholder. File selected:", file?.name);
   return true;
 }
 
 
 // ============================================================
-// Rendering backend result
+// Render backend result
 // ============================================================
 
 function renderBackendData(data) {
   latestEvaluationData = data;
   latestRuleBasedSignals = data.rule_based_signals || {};
   latestEvaluationAgentResult = data.evaluation_agent_result || {};
-  latestResume = data.updated_resume || latestResume;
 
   const score = Number(data.ats_score ?? latestRuleBasedSignals.ats_score ?? 0);
 
   atsScore.textContent = `${score}%`;
-  atsStatusText.textContent = score >= 80 ? "Strong" : score >= 60 ? "Needs polish" : "Needs work";
+  atsStatusText.textContent =
+    score >= 80 ? "Excellent" :
+    score >= 60 ? "Competitive" :
+    "Needs work";
+
   setGauge(score);
 
   renderCompetitiveness(score, latestEvaluationAgentResult);
@@ -495,7 +467,12 @@ function renderCompetitiveness(score, evaluation) {
   rankScore.textContent = `${numericRank}/100`;
   rankBar.style.width = `${Math.max(0, Math.min(numericRank, 100))}%`;
 
-  competitivenessText.textContent = `Competitiveness: ${category}`;
+  const label =
+    category === "상" ? "Strong" :
+    category === "중" ? "Competitive" :
+    "Needs improvement";
+
+  competitivenessText.textContent = `${label} (${category})`;
 }
 
 function renderKeywordCards(ruleSignals) {
@@ -507,7 +484,7 @@ function renderKeywordCards(ruleSignals) {
   missingKeywordsBox.innerHTML = "";
 
   if (presentKeywords.length === 0) {
-    keywordsBox.innerHTML = '<span>No keywords found</span>';
+    keywordsBox.innerHTML = "<span>No keywords found</span>";
   } else {
     presentKeywords.forEach(keyword => {
       keywordsBox.innerHTML += `<span>${escapeHtml(keyword)}</span>`;
@@ -515,7 +492,7 @@ function renderKeywordCards(ruleSignals) {
   }
 
   if (missingKeywords.length === 0) {
-    missingKeywordsBox.innerHTML = '<span>None</span>';
+    missingKeywordsBox.innerHTML = "<span>None</span>";
   } else {
     missingKeywords.forEach(keyword => {
       missingKeywordsBox.innerHTML += `<span>${escapeHtml(keyword)}</span>`;
@@ -529,18 +506,21 @@ function renderBreakdownScores(score, ruleSignals) {
   const missingKeywords = keywordResult.missing_keywords || [];
 
   const totalKeywords = presentKeywords.length + missingKeywords.length;
+
   const keywordScoreValue = totalKeywords > 0
     ? Math.round((presentKeywords.length / totalKeywords) * 100)
     : 0;
 
   const sectionPresence = ruleSignals.section_presence || {};
   const sectionValues = Object.values(sectionPresence);
+
   const completeScoreValue = sectionValues.length > 0
     ? Math.round((sectionValues.filter(Boolean).length / sectionValues.length) * 100)
     : score;
 
   const weakCount = (ruleSignals.weak_phrase_flags || []).length;
   const grammarCount = (ruleSignals.grammar_flags || []).length;
+
   const formatScoreValue = Math.max(0, 100 - weakCount * 10 - grammarCount * 8);
 
   keywordPercent.textContent = `${keywordScoreValue}%`;
@@ -608,6 +588,11 @@ function renderSuggestions(ruleSignals, evaluation) {
   });
 }
 
+
+// ============================================================
+// Render resume bullets
+// ============================================================
+
 function renderResumeEditor(ruleSignals, evaluation) {
   const allBullets = ruleSignals.all_bullets || [];
   const weakBulletIds = new Set();
@@ -656,6 +641,7 @@ function renderResumeEditor(ruleSignals, evaluation) {
     element.addEventListener("click", () => {
       const bulletId = element.dataset.bulletId;
       const bulletText = element.dataset.bulletText;
+
       requestRewriteForBullet(bulletId, bulletText);
     });
   });
@@ -679,14 +665,16 @@ function renderBulletHtml(bullet, weakBulletIds) {
 
 
 // ============================================================
-// Rewrite modal rendering
+// Rewrite modal
 // ============================================================
 
 function openRewriteModal() {
+  rewriteModal.style.display = "flex";
   rewriteModal.classList.remove("hidden");
 }
 
 function closeRewriteModal() {
+  rewriteModal.style.display = "none";
   rewriteModal.classList.add("hidden");
 
   selectedBullet = {
@@ -755,37 +743,49 @@ function renderRewriteSuggestions(data) {
 
 
 // ============================================================
+// Manual save placeholder
+// ============================================================
+
+function saveManualEdits() {
+  alert(
+    "Manual save is not fully connected yet. " +
+    "For now, use rewrite suggestions and Accept Suggestion to save into sample/final.json."
+  );
+}
+
+
+// ============================================================
 // Event listeners
 // ============================================================
 
-resumeUpload.addEventListener("change", async function () {
-  const file = resumeUpload.files[0];
-  if (!file) return;
+if (resumeUpload) {
+  resumeUpload.addEventListener("change", async function () {
+    const file = resumeUpload.files[0];
+    if (!file) return;
 
-  if (!roleSelect.value || !levelSelect.value) {
-    alert("Please select role and level first.");
-    resumeUpload.value = "";
-    return;
-  }
+    if (!roleSelect.value || !levelSelect.value) {
+      alert("Please select role and level first.");
+      resumeUpload.value = "";
+      return;
+    }
 
-  try {
-    setLoadingState("Preparing resume...");
+    try {
+      setLoadingState("Preparing resume...");
 
-    // TODO: Replace this placeholder once preprocessing is ready.
-    await runPreprocessingPlaceholder(file);
+      // Temporary until preprocessing is connected.
+      await runPreprocessingPlaceholder(file);
 
-    // Temporary current behavior:
-    // Backend reads existing sample/final.json.
-    // Make sure final.json already contains target_role and target_level.
-    await evaluateFromFinalJson();
+      // Current backend reads sample/final.json.
+      await evaluateFromFinalJson();
 
-  } catch (error) {
-    showError(
-      "Cannot evaluate resume. Make sure backend is running and sample/final.json exists.\n\n" +
-      error.message
-    );
-  }
-});
+    } catch (error) {
+      showError(
+        "Cannot evaluate resume. Make sure backend is running and sample/final.json exists.\n\n" +
+        error.message
+      );
+    }
+  });
+}
 
 if (evaluateFileBtn) {
   evaluateFileBtn.addEventListener("click", async function () {
@@ -831,8 +831,13 @@ if (rewriteModal) {
   });
 }
 
-categorySelect.addEventListener("change", loadRoles);
-roleSelect.addEventListener("change", loadLevels);
+if (categorySelect) {
+  categorySelect.addEventListener("change", loadRoles);
+}
+
+if (roleSelect) {
+  roleSelect.addEventListener("change", loadLevels);
+}
 
 if (demoBtn) {
   demoBtn.addEventListener("click", async function () {
@@ -849,7 +854,25 @@ if (demoBtn) {
 
 
 // ============================================================
-// Initialize
+// Initialize page
 // ============================================================
 
-loadRoles();
+function initPage() {
+  loadRoles();
+
+  // Important: force modal hidden on page load.
+  if (rewriteModal) {
+    rewriteModal.style.display = "none";
+    rewriteModal.classList.add("hidden");
+  }
+
+  if (dashboard) {
+    dashboard.classList.add("hidden");
+  }
+
+  if (bottomMetrics) {
+    bottomMetrics.classList.add("hidden");
+  }
+}
+
+initPage();

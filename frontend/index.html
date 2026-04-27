@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reeracify Resume</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- IMPORTANT: style.css must be in the same frontend folder -->
+  <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
 
 <header class="navbar">
@@ -38,12 +41,12 @@
       <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" hidden />
     </label>
 
-    <!-- Temporary button while preprocessing is not ready.
-         This directly calls backend /evaluate-file, which reads sample/final.json. -->
     <button id="evaluateFileBtn" type="button">Evaluate final.json</button>
   </div>
 
-  <button id="linkedinBtn" class="linkedin-btn" type="button">in Connect LinkedIn</button>
+  <button id="linkedinBtn" class="linkedin-btn" type="button">
+    in Connect LinkedIn
+  </button>
 </header>
 
 <section id="landing" class="landing">
@@ -51,14 +54,17 @@
   <h1>Reeracify</h1>
   <p>Optimize your resume for ATS systems.</p>
 
-  <button id="demoBtn" class="demo-btn" type="button">✨ Try with Demo Resume</button>
-  <small>For now, upload can be used as a trigger after preprocessing creates sample/final.json.</small>
+  <button id="demoBtn" class="demo-btn" type="button">
+    ✨ Try with Demo Resume
+  </button>
+
+  <small>
+    For now, upload can be used as a trigger after preprocessing creates sample/final.json.
+  </small>
 </section>
 
-<!-- ================= DASHBOARD ================= -->
 <main id="dashboard" class="dashboard hidden">
 
-  <!-- LEFT PANEL -->
   <aside class="left-panel">
 
     <div class="card ats-card">
@@ -119,12 +125,10 @@
     <div class="card suggestion-card">
       <h3>SUGGESTIONS <span id="suggestionCount" class="pill">0</span></h3>
 
-      <!-- Backend Evaluation Agent reasoning -->
       <div id="evaluationReasoning">
         <p>No evaluation yet.</p>
       </div>
 
-      <!-- Rule-based + Evaluation Agent suggestions -->
       <div id="suggestions">
         <p>No suggestions yet.</p>
       </div>
@@ -132,31 +136,27 @@
 
   </aside>
 
-  <!-- EDITOR -->
   <section class="editor-panel">
     <div class="panel-header">
       <h3>EDITING</h3>
       <span class="pill">Click weak bullets for rewrite</span>
     </div>
 
-    <!-- script.js should render bullets here.
-         Each bullet should preserve backend bullet_id, e.g. exp_1_b1 or proj_1_b1. -->
     <div id="editorContent" class="resume-text">
       <p class="empty-state">Upload resume or evaluate final.json to view content.</p>
     </div>
 
     <p class="hint">
-      Weak bullets returned from the backend can be highlighted here. When clicked, frontend calls /rewrite.
+      Click highlighted bullets to see rewrite suggestions.
     </p>
   </section>
 
-  <!-- PREVIEW -->
   <section class="preview-panel">
     <div class="panel-header">
       <h3>👁 PREVIEW</h3>
 
       <div class="preview-actions">
-        <button id="reevaluateFileBtn" type="button">Reevaluate</button>
+        <button id="reevaluateFileBtn" type="button">Re-evaluate</button>
       </div>
     </div>
 
@@ -169,19 +169,37 @@
 
 </main>
 
-<!-- ================= FOOTER ================= -->
 <footer id="bottomMetrics" class="bottom-metrics hidden">
   <h4>LANGUAGE QUALITY</h4>
-  <div class="metric"><h2 id="summaryScore">0</h2><p>SUMMARY</p></div>
-  <div class="metric"><h2 id="keywordScore">0</h2><p>KEYWORDS</p></div>
-  <div class="metric"><h2 id="impactScore">0</h2><p>IMPACT</p></div>
-  <div class="metric"><h2 id="lengthScore">0</h2><p>LENGTH</p></div>
+
+  <div class="metric">
+    <h2 id="summaryScore">0</h2>
+    <div></div>
+    <p>SUMMARY</p>
+  </div>
+
+  <div class="metric">
+    <h2 id="keywordScore">0</h2>
+    <div></div>
+    <p>KEYWORDS</p>
+  </div>
+
+  <div class="metric">
+    <h2 id="impactScore">0</h2>
+    <div></div>
+    <p>IMPACT</p>
+  </div>
+
+  <div class="metric">
+    <h2 id="lengthScore">0</h2>
+    <div></div>
+    <p>LENGTH</p>
+  </div>
 
   <button id="saveResumeBtn" type="button">Save Manual Edits</button>
 </footer>
 
-<!-- ================= REWRITE MODAL ================= -->
-<section id="rewriteModal" class="modal hidden">
+<section id="rewriteModal" class="modal hidden" style="display: none;">
   <div class="modal-box">
     <h3>Rewrite Suggestion</h3>
 
@@ -195,13 +213,14 @@
     </div>
 
     <div class="modal-actions">
-      <button id="acceptRewriteBtn" type="button">Accept Suggestion</button>
+      <button id="acceptRewriteBtn" type="button" disabled>Accept Suggestion</button>
       <button id="ignoreRewriteBtn" type="button">Ignore</button>
       <button id="closeRewriteModalBtn" type="button">Close</button>
     </div>
   </div>
 </section>
 
-<script src="script.js"></script>
+<!-- IMPORTANT: script.js must be in the same frontend folder -->
+<script src="./script.js"></script>
 </body>
 </html>
