@@ -1,0 +1,204 @@
+const landing = document.getElementById("landing");
+const dashboard = document.getElementById("dashboard");
+const bottomMetrics = document.getElementById("bottomMetrics");
+
+const resumeUpload = document.getElementById("resumeUpload");
+const demoBtn = document.getElementById("demoBtn");
+const fieldSelect = document.getElementById("fieldSelect");
+const levelSelect = document.getElementById("levelSelect");
+
+const editorContent = document.getElementById("editorContent");
+const previewPaper = document.getElementById("previewPaper");
+
+const atsScore = document.getElementById("atsScore");
+const rankScore = document.getElementById("rankScore");
+const rankBar = document.getElementById("rankBar");
+
+const tooltip = document.getElementById("tooltip");
+const tooltipText = document.getElementById("tooltipText");
+const applyBtn = document.getElementById("applyBtn");
+
+const linkedinBtn = document.getElementById("linkedinBtn");
+const modal = document.getElementById("modal");
+const closeModal = document.getElementById("closeModal");
+
+let selectedHighlight = null;
+let zoom = 1;
+
+resumeUpload.addEventListener("change", async function () {
+  const file = resumeUpload.files[0];
+  atsScore.textContent = "...";
+  if (!file) return;
+
+document.querySelector(".upload-btn").childNodes[0].textContent =
+  "⬆ " + file.name + " ";
+
+  showDashboard();
+
+  try {
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    // STEP 1: send to parser
+  const parseRes = await fetch("http://127.0.0.1:3001/parse-resume", {
+    method: "POST",
+    body: formData
+  });
+
+  if (!parseRes.ok) throw new Error("Parser failed");
+
+const parsed = await parseRes.json();
+
+    console.log("Parsed:", parsed);
+
+    // STEP 2: convert format
+    const payload = convertToJuliaFormat(parsed);
+
+    // STEP 3: send to Julia backend
+  const evalRes = await fetch("http://127.0.0.1:8000/evaluate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!evalRes.ok) throw new Error("Evaluation failed");
+
+  const result = await evalRes.json();
+
+    console.log("Result:", result);
+
+    // STEP 4: display
+    renderResult(result);
+
+  } catch (err) {
+    console.error(err);
+    alert("Backend connection failed");
+  }
+});
+
+function showDashboard() {
+  landing.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+  bottomMetrics.classList.remove("hidden");
+  updatePreview();
+}
+
+function updatePreview() {
+  previewPaper.innerHTML = editorContent.innerHTML;
+}
+
+
+
+demoBtn.addEventListener("click", showDashboard);
+
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("highlight")) {
+    selectedHighlight = e.target;
+    tooltipText.textContent = e.target.dataset.suggestion;
+    tooltip.classList.remove("hidden");
+    tooltip.style.left = e.pageX + 15 + "px";
+    tooltip.style.top = e.pageY + 15 + "px";
+  } else if (!tooltip.contains(e.target)) {
+    tooltip.classList.add("hidden");
+  }
+});
+
+applyBtn.addEventListener("click", function () {
+  if (selectedHighlight) {
+    selectedHighlight.textContent = selectedHighlight.dataset.suggestion;
+    selectedHighlight.classList.remove("highlight");
+    tooltip.classList.add("hidden");
+    updatePreview();
+  }
+});
+
+document.getElementById("zoomIn").addEventListener("click", function () {
+  zoom += 0.1;
+  previewPaper.style.transform = `scale(${zoom})`;
+  document.getElementById("zoomText").textContent = Math.round(48 * zoom) + "%";
+});
+
+document.getElementById("zoomOut").addEventListener("click", function () {
+  zoom -= 0.1;
+  if (zoom < 0.6) zoom = 0.6;
+  previewPaper.style.transform = `scale(${zoom})`;
+  document.getElementById("zoomText").textContent = Math.round(48 * zoom) + "%";
+});
+
+document.getElementById("downloadBtn").addEventListener("click", function () {
+  alert("Download PDF simulated. Print window will open.");
+  window.print();
+});
+
+linkedinBtn.addEventListener("click", function () {
+  modal.classList.remove("hidden");
+});
+
+closeModal.addEventListener("click", function () {
+  modal.classList.add("hidden");
+});
+
+updatePreview();
+
+function convertToJuliaFormat(parsed) {
+  return {
+    target_role: fieldSelect.value,
+    target_level: levelSelect.value,
+
+    education: (parsed.education || []).map(e => ({
+      school: e.institution || "",
+      degree: e.degree || "",
+      field: "",
+      start_date: null,
+      end_date: e.year || null,
+      gpa: e.cgpa || null
+    })),
+
+    experience: (parsed.experience || []).map((e, i) => ({
+      company: "Unknown",
+      role: "Experience " + (i + 1),
+      description: e.description || "",
+      bullets: e.description ? [e.description] : []
+    })),
+
+    projects: (parsed.projects || []).map((p, i) => ({
+      name: "Project " + (i + 1),
+      description: p.description || "",
+      technologies: [],
+      bullets: p.description ? [p.description] : []
+    })),
+
+    skills: parsed.skills || []
+  };
+}
+
+function renderResult(data) {
+  const score = data.ats_score || 0;
+
+  atsScore.textContent = score + "%";
+  rankScore.textContent = score + "/100";
+  rankBar.style.width = score + "%";
+
+  const keywordData = data.rule_based_signals.keyword_result;
+
+  const present = keywordData.present_keywords || [];
+  const missing = keywordData.missing_keywords || [];
+
+  const percent =
+    present.length + missing.length > 0
+      ? Math.round((present.length / (present.length + missing.length)) * 100)
+      : 0;
+
+  document.getElementById("keywordPercent").textContent = percent + "%";
+  document.getElementById("keywordBar").style.width = percent + "%";
+
+  document.getElementById("keywords").innerHTML =
+    present.map(k => `<span>${k}</span>`).join("");
+
+  const suggestions = data.evaluation_agent_result.improvement_priorities || [];
+
+  document.getElementById("suggestions").innerHTML =
+    suggestions.map(s => `<p>⚠ ${s}</p>`).join("");
+}
