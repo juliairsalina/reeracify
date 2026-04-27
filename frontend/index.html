@@ -129,9 +129,16 @@
 
   <!-- PREVIEW -->
   <section class="preview-panel">
-    <div class="panel-header">
-      <h3>👁 PREVIEW</h3>
+      <div class="panel-header">
+    <h3>👁 PREVIEW</h3>
+
+    <div class="preview-actions">
+      <button id="zoomOut">🔍−</button>
+      <span id="zoomText">48%</span>
+      <button id="zoomIn">🔍+</button>
+      <button id="downloadBtn">⬇ Download PDF</button>
     </div>
+  </div>
 
     <div class="preview-area">
       <div id="previewPaper" class="paper">
@@ -142,14 +149,17 @@
 
 </main>
 
-<!-- ================= FOOTER ================= -->
-<footer id="bottomMetrics" class="bottom-metrics hidden">
-  <h4>LANGUAGE QUALITY</h4>
-  <div class="metric"><h2 id="summaryScore">0</h2><p>SUMMARY</p></div>
-  <div class="metric"><h2 id="keywordScore">0</h2><p>KEYWORDS</p></div>
-  <div class="metric"><h2 id="impactScore">0</h2><p>IMPACT</p></div>
-  <div class="metric"><h2 id="lengthScore">0</h2><p>LENGTH</p></div>
-</footer>
+
+  <footer id="bottomMetrics" class="bottom-metrics hidden">
+    <h4>LANGUAGE QUALITY</h4>
+
+    <div class="metric"><h2 id="summaryScore">0</h2><p>SUMMARY</p></div>
+    <div class="metric"><h2 id="keywordScore">0</h2><p>KEYWORDS</p></div>
+    <div class="metric"><h2 id="impactScore">0</h2><p>IMPACT</p></div>
+    <div class="metric"><h2 id="lengthScore">0</h2><p>LENGTH</p></div>
+
+    <button id="reevaluateBtn">🔄 Re-evaluate</button>
+  </footer>
 
 <script src="script.js"></script>
 </body>

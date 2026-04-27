@@ -100,6 +100,33 @@ function setLoadingState() {
   previewPaper.innerHTML = '<p class="empty-state">Generating preview...</p>';
 }
 
+document.getElementById("zoomIn").addEventListener("click", function () {
+  const paper = document.getElementById("previewPaper");
+  let currentZoom = Number(paper.dataset.zoom || 1);
+  currentZoom += 0.1;
+  paper.dataset.zoom = currentZoom;
+  paper.style.transform = `scale(${currentZoom})`;
+  document.getElementById("zoomText").textContent = Math.round(48 * currentZoom) + "%";
+});
+
+document.getElementById("zoomOut").addEventListener("click", function () {
+  const paper = document.getElementById("previewPaper");
+  let currentZoom = Number(paper.dataset.zoom || 1);
+  currentZoom -= 0.1;
+  if (currentZoom < 0.6) currentZoom = 0.6;
+  paper.dataset.zoom = currentZoom;
+  paper.style.transform = `scale(${currentZoom})`;
+  document.getElementById("zoomText").textContent = Math.round(48 * currentZoom) + "%";
+});
+
+document.getElementById("downloadBtn").addEventListener("click", function () {
+  window.print();
+});
+
+document.getElementById("reevaluateBtn").addEventListener("click", function () {
+  alert("Re-evaluate will call backend after analyze endpoint is confirmed.");
+});
+
 function updatePreview() {
   previewPaper.innerHTML = editorContent.innerHTML;
 }
