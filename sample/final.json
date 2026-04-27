@@ -1,0 +1,131 @@
+{
+  "target_role": "Data Analyst",
+  "target_level": "Entry-level",
+  "name": "NUR MUSHIRA BINTI MAZNI",
+  "email": "mushiramazni@gmail.com",
+  "phone": "+8210-64534791",
+  "address": null,
+  "summary": "NUR MUSHIRA BINTI MAZNI Melaka, Malaysia | +82 10-64534791 | mushiramazni@gmail.com",
+  "education": [
+    {
+      "school": "Korea University",
+      "degree": "",
+      "field": "",
+      "start_date": "",
+      "end_date": "",
+      "gpa": "3.44"
+    },
+    {
+      "school": "Korean University",
+      "degree": "",
+      "field": "",
+      "start_date": "",
+      "end_date": "",
+      "gpa": "3.97"
+    }
+  ],
+  "experience": [
+    {
+      "company": "",
+      "role": "Library Assistant - Gangsa Primary School, Melaka Jun 2021 - Jul 2021",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "bullets": [
+        "Organized and maintained library books to ensure easy access for students.",
+        "Managed the rental and return system for books.",
+        "Kept the library clean and orderly to provide a welcoming environment."
+      ]
+    },
+    {
+      "company": "",
+      "role": "Association Committee - Media Bureau of PPMK",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "bullets": [
+        "Captured photos during PPMK activities for documentation and social media.",
+        "Designed visual content for PPMK's official Instagram page."
+      ]
+    },
+    {
+      "company": "",
+      "role": "Medic Team - Religion and Welfare Bureau of PPMK Mar 2025 - Dec 2025",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "bullets": [
+        "Attended first aid training classes under Red Crescent Korea.",
+        "Assisted students during PPMK events involving physical activities by providing basic medical support."
+      ]
+    },
+    {
+      "company": "",
+      "role": "Event Crew - Persatuan Pelajar Malaysia Korea (PPMK) Nov 2023 - Nov 2025",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "bullets": [
+        "Contributed to the annual dinner team for three consecutive years.",
+        "Supported event logistics including decoration, certificate handling, and (upcoming) technical team duties.",
+        "Helped ensure smooth execution of PPMK's annual dinner events."
+      ]
+    },
+    {
+      "company": "",
+      "role": "Dance Crew - Malaysian Student Dance Club (MSDC) Mar 2023 - Dec 2025",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "bullets": [
+        "Active member of the dance crew, performing at sports events, cultural nights, and student gatherings.",
+        "Represented the club in performances to promote Malaysian culture among the student community."
+      ]
+    },
+    {
+      "company": "",
+      "role": "Facilitator - Al Storytelling & Media Workshop",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "bullets": [
+        "Guided 25 primary school students in creating storytelling books using Al tools such as ChatGPT and Canva AI."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Deep Learning - CBAM Attention-based Crowd Detection",
+      "description": " . Introduced a hybrid loss (MSE + SSIM + Count Loss), reducing MAE from 434 to 103 and boosting validation accuracy from 15.8% to 79.7%.",
+      "technologies": [],
+      "bullets": [
+        "Proposed a global Gaussian kernel for more uniform ground-truth supervision and integrated CBAM attention between VGG-16 front-end and dilated convolution back-end of CSRNet.",
+        "Designed a stable training pipeline with optimized hyperparameters to ensure effective model convergence. Evaluated on the ShanghaiTech Part A dataset, showing improved density map quality and robustness to scale variation."
+      ]
+    },
+    {
+      "name": "Introduction to Computer Vision - TrOCR Receipt Scanner",
+      "description": "",
+      "technologies": [],
+      "bullets": [
+        "Integrated TrOCR (Vision Transformer + autoregressive decoder) for robust text extraction from handwritten and complex real-world receipts.",
+        "Applied CLAHE contrast enhancement and Hough Transform-based affine deskewing to handle faded and warped receipt inputs.",
+        "Arranged preprocessed images into LayoutLMv3 for structured information extraction, targeting automated expense tracking and claims processing."
+      ]
+    },
+    {
+      "name": "RE:ALThon GDG on Campus - Al Fishing Compliance App (Excellence Award)",
+      "description": "",
+      "technologies": [],
+      "bullets": [
+        "Contributed to sourcing and integrating public datasets, preprocessing data to ensure compatibility and enable system functionality.",
+        "Built a Flutter mobile app integrating Google Gemini API to identify fish species from camera images and determine protected/catchable status in real time.",
+        "Implemented GPS-based fishing restriction zone alerts using Naver Maps API, promoting awareness of marine protected areas."
+      ]
+    }
+  ],
+  "skills": [
+    "teamwork"
+  ],
+  "awards": []
+}

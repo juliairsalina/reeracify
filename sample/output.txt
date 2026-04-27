@@ -1,0 +1,424 @@
+==============================
+ATS SCORE
+==============================
+29
+
+==============================
+RUBRIC USED
+==============================
+{
+  "target_role": "Data Analyst",
+  "target_level": "Entry-level",
+  "expected_keywords": [
+    "python",
+    "sql",
+    "excel",
+    "tableau",
+    "power bi",
+    "data analysis",
+    "visualization",
+    "statistics",
+    "dashboard",
+    "pandas"
+  ],
+  "expected_skills": [
+    "python",
+    "sql",
+    "excel",
+    "tableau",
+    "power bi"
+  ],
+  "preferred_min_projects": 2,
+  "preferred_min_experience_bullets": 3,
+  "preferred_min_project_bullets": 2,
+  "notes": "Entry-level data analyst resumes should show tools, projects, dashboards, and measurable analysis outcomes."
+}
+
+==============================
+SECTION PRESENCE
+==============================
+{
+  "education": true,
+  "experience": true,
+  "projects": true,
+  "skills": true
+}
+
+==============================
+ALL BULLETS
+==============================
+[
+  {
+    "id": "exp_1_b1",
+    "section": "experience",
+    "text": "Organized and maintained library books to ensure easy access for students."
+  },
+  {
+    "id": "exp_1_b2",
+    "section": "experience",
+    "text": "Managed the rental and return system for books."
+  },
+  {
+    "id": "exp_1_b3",
+    "section": "experience",
+    "text": "Kept the library clean and orderly to provide a welcoming environment."
+  },
+  {
+    "id": "exp_2_b1",
+    "section": "experience",
+    "text": "Captured photos during PPMK activities for documentation and social media."
+  },
+  {
+    "id": "exp_2_b2",
+    "section": "experience",
+    "text": "Designed visual content for PPMK's official Instagram page."
+  },
+  {
+    "id": "exp_3_b1",
+    "section": "experience",
+    "text": "Attended first aid training classes under Red Crescent Korea."
+  },
+  {
+    "id": "exp_3_b2",
+    "section": "experience",
+    "text": "Assisted students during PPMK events involving physical activities by providing basic medical support."
+  },
+  {
+    "id": "exp_4_b1",
+    "section": "experience",
+    "text": "Contributed to the annual dinner team for three consecutive years."
+  },
+  {
+    "id": "exp_4_b2",
+    "section": "experience",
+    "text": "Supported event logistics including decoration, certificate handling, and (upcoming) technical team duties."
+  },
+  {
+    "id": "exp_4_b3",
+    "section": "experience",
+    "text": "Helped ensure smooth execution of PPMK's annual dinner events."
+  },
+  {
+    "id": "exp_5_b1",
+    "section": "experience",
+    "text": "Active member of the dance crew, performing at sports events, cultural nights, and student gatherings."
+  },
+  {
+    "id": "exp_5_b2",
+    "section": "experience",
+    "text": "Represented the club in performances to promote Malaysian culture among the student community."
+  },
+  {
+    "id": "exp_6_b1",
+    "section": "experience",
+    "text": "Guided 25 primary school students in creating storytelling books using Al tools such as ChatGPT and Canva AI."
+  },
+  {
+    "id": "proj_1_b1",
+    "section": "projects",
+    "text": "Proposed a global Gaussian kernel for more uniform ground-truth supervision and integrated CBAM attention between VGG-16 front-end and dilated convolution back-end of CSRNet."
+  },
+  {
+    "id": "proj_1_b2",
+    "section": "projects",
+    "text": "Designed a stable training pipeline with optimized hyperparameters to ensure effective model convergence. Evaluated on the ShanghaiTech Part A dataset, showing improved density map quality and robustness to scale variation."
+  },
+  {
+    "id": "proj_2_b1",
+    "section": "projects",
+    "text": "Integrated TrOCR (Vision Transformer + autoregressive decoder) for robust text extraction from handwritten and complex real-world receipts."
+  },
+  {
+    "id": "proj_2_b2",
+    "section": "projects",
+    "text": "Applied CLAHE contrast enhancement and Hough Transform-based affine deskewing to handle faded and warped receipt inputs."
+  },
+  {
+    "id": "proj_2_b3",
+    "section": "projects",
+    "text": "Arranged preprocessed images into LayoutLMv3 for structured information extraction, targeting automated expense tracking and claims processing."
+  },
+  {
+    "id": "proj_3_b1",
+    "section": "projects",
+    "text": "Contributed to sourcing and integrating public datasets, preprocessing data to ensure compatibility and enable system functionality."
+  },
+  {
+    "id": "proj_3_b2",
+    "section": "projects",
+    "text": "Built a Flutter mobile app integrating Google Gemini API to identify fish species from camera images and determine protected/catchable status in real time."
+  },
+  {
+    "id": "proj_3_b3",
+    "section": "projects",
+    "text": "Implemented GPS-based fishing restriction zone alerts using Naver Maps API, promoting awareness of marine protected areas."
+  }
+]
+
+==============================
+KEYWORD RESULT
+==============================
+{
+  "present_keywords": [],
+  "missing_keywords": [
+    "python",
+    "sql",
+    "excel",
+    "tableau",
+    "power bi",
+    "data analysis",
+    "visualization",
+    "statistics",
+    "dashboard",
+    "pandas"
+  ]
+}
+
+==============================
+MEASURABLE EVIDENCE
+==============================
+{
+  "bullets_with_metrics": [
+    "exp_6_b1",
+    "proj_1_b1"
+  ],
+  "bullets_without_metrics": [
+    "exp_1_b1",
+    "exp_1_b2",
+    "exp_1_b3",
+    "exp_2_b1",
+    "exp_2_b2",
+    "exp_3_b1",
+    "exp_3_b2",
+    "exp_4_b1",
+    "exp_4_b2",
+    "exp_4_b3",
+    "exp_5_b1",
+    "exp_5_b2",
+    "proj_1_b2",
+    "proj_2_b1",
+    "proj_2_b2",
+    "proj_2_b3",
+    "proj_3_b1",
+    "proj_3_b2",
+    "proj_3_b3"
+  ],
+  "metric_bullet_count": 2,
+  "total_bullet_count": 21
+}
+
+==============================
+WEAK PHRASE FLAGS
+==============================
+[
+  {
+    "id": "exp_3_b2",
+    "section": "experience",
+    "text": "Assisted students during PPMK events involving physical activities by providing basic medical support.",
+    "weak_phrase": "assisted",
+    "reason": "Uses weak phrase: 'assisted'"
+  },
+  {
+    "id": "exp_4_b1",
+    "section": "experience",
+    "text": "Contributed to the annual dinner team for three consecutive years.",
+    "weak_phrase": "contributed to",
+    "reason": "Uses weak phrase: 'contributed to'"
+  },
+  {
+    "id": "exp_4_b2",
+    "section": "experience",
+    "text": "Supported event logistics including decoration, certificate handling, and (upcoming) technical team duties.",
+    "weak_phrase": "supported",
+    "reason": "Uses weak phrase: 'supported'"
+  },
+  {
+    "id": "proj_3_b1",
+    "section": "projects",
+    "text": "Contributed to sourcing and integrating public datasets, preprocessing data to ensure compatibility and enable system functionality.",
+    "weak_phrase": "contributed to",
+    "reason": "Uses weak phrase: 'contributed to'"
+  }
+]
+
+==============================
+GRAMMAR FLAGS
+==============================
+[
+  {
+    "id": "proj_1_b1",
+    "section": "projects",
+    "text": "Proposed a global Gaussian kernel for more uniform ground-truth supervision and integrated CBAM attention between VGG-16 front-end and dilated convolution back-end of CSRNet.",
+    "issue_count": 2,
+    "issues": [
+      {
+        "message": "Possible spelling mistake found.",
+        "short_message": "",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "category": "TYPOS",
+        "matched_text": "CBAM",
+        "suggestions": [
+          "CBA",
+          "CAM",
+          "CLAM"
+        ]
+      },
+      {
+        "message": "Possible spelling mistake found.",
+        "short_message": "",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "category": "TYPOS",
+        "matched_text": "CSRNet",
+        "suggestions": [
+          "Cornet",
+          "Carnet",
+          "CSR Net"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "proj_1_b2",
+    "section": "projects",
+    "text": "Designed a stable training pipeline with optimized hyperparameters to ensure effective model convergence. Evaluated on the ShanghaiTech Part A dataset, showing improved density map quality and robustness to scale variation.",
+    "issue_count": 1,
+    "issues": [
+      {
+        "message": "Possible spelling mistake found.",
+        "short_message": "",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "category": "TYPOS",
+        "matched_text": "ShanghaiTech",
+        "suggestions": [
+          "Shanghai Tech"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "proj_2_b1",
+    "section": "projects",
+    "text": "Integrated TrOCR (Vision Transformer + autoregressive decoder) for robust text extraction from handwritten and complex real-world receipts.",
+    "issue_count": 1,
+    "issues": [
+      {
+        "message": "Possible spelling mistake found.",
+        "short_message": "",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "category": "TYPOS",
+        "matched_text": "TrOCR",
+        "suggestions": [
+          "Trocar"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "proj_2_b2",
+    "section": "projects",
+    "text": "Applied CLAHE contrast enhancement and Hough Transform-based affine deskewing to handle faded and warped receipt inputs.",
+    "issue_count": 2,
+    "issues": [
+      {
+        "message": "Possible spelling mistake found.",
+        "short_message": "",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "category": "TYPOS",
+        "matched_text": "CLAHE",
+        "suggestions": [
+          "CLAVE",
+          "CLAH",
+          "CLARE"
+        ]
+      },
+      {
+        "message": "Possible spelling mistake found.",
+        "short_message": "",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "category": "TYPOS",
+        "matched_text": "deskewing",
+        "suggestions": [
+          "skewing",
+          "desexing",
+          "resewing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "proj_3_b3",
+    "section": "projects",
+    "text": "Implemented GPS-based fishing restriction zone alerts using Naver Maps API, promoting awareness of marine protected areas.",
+    "issue_count": 1,
+    "issues": [
+      {
+        "message": "Possible spelling mistake found.",
+        "short_message": "",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "category": "TYPOS",
+        "matched_text": "Naver",
+        "suggestions": [
+          "Never",
+          "Nave",
+          "Navel"
+        ]
+      }
+    ]
+  }
+]
+
+==============================
+EVALUATION AGENT RESULT
+==============================
+{
+  "competitiveness_category": "하",
+  "reasoning": "The resume lacks all core data analyst keywords and skills (Python, SQL, Excel, Tableau, Power BI, etc.), has only one generic skill listed, and most experience is unrelated to data analysis. Projects show some technical exposure but do not mention relevant tools or measurable analysis outcomes. ATS score is very low, and measurable evidence is almost absent.",
+  "what_top_resumes_usually_have": [
+    "Direct experience with data analysis tools (Python, SQL, Excel, Tableau, Power BI)",
+    "Clear evidence of data analysis or visualization projects",
+    "Measurable impact or outcomes in bullets",
+    "Relevant coursework or certifications",
+    "Multiple technical skills listed"
+  ],
+  "weak_sections": [
+    {
+      "section": "skills",
+      "reason": "Only 'teamwork' is listed; lacks all required technical skills for a data analyst."
+    },
+    {
+      "section": "experience",
+      "reason": "Experience is unrelated to data analysis; no mention of data, analytics, or relevant tools."
+    },
+    {
+      "section": "education",
+      "reason": "No degree or field specified; missing relevant coursework or certifications."
+    }
+  ],
+  "weak_bullets": [
+    {
+      "id": "exp_1_b1",
+      "text": "Organized and maintained library books to ensure easy access for students.",
+      "reason": "No relevance to data analysis; lacks technical or analytical content."
+    },
+    {
+      "id": "exp_4_b1",
+      "text": "Contributed to the annual dinner team for three consecutive years.",
+      "reason": "Uses weak phrase 'contributed to'; no measurable impact or relevance to target role."
+    },
+    {
+      "id": "exp_3_b2",
+      "text": "Assisted students during PPMK events involving physical activities by providing basic medical support.",
+      "reason": "Uses weak phrase 'assisted'; not related to data analysis."
+    },
+    {
+      "id": "proj_3_b1",
+      "text": "Contributed to sourcing and integrating public datasets, preprocessing data to ensure compatibility and enable system functionality.",
+      "reason": "Uses weak phrase 'contributed to'; lacks specifics about tools, methods, or measurable outcomes."
+    }
+  ],
+  "improvement_priorities": [
+    "Add core data analyst skills (Python, SQL, Excel, Tableau, Power BI) to the skills section.",
+    "Include relevant coursework, certifications, or degree details in education.",
+    "Rewrite experience and project bullets to highlight analytical tasks, tools used, and measurable outcomes."
+  ]
+}
