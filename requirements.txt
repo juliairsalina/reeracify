@@ -1,0 +1,18 @@
+# FastAPI backend framework
+fastapi
+
+# ASGI server to run FastAPI locally
+uvicorn
+
+# Load environment variables from app/.env
+python-dotenv
+
+# Used for calling external HTTP APIs, including public LanguageTool API version
+requests
+
+# Azure OpenAI / OpenAI Python SDK
+openai
+
+# Local LanguageTool grammar checker wrapper
+# Requires Java installed on your machine
+language-tool-python
