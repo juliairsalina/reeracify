@@ -1,0 +1,59 @@
+{
+  "target_role": "",
+  "target_level": "",
+  "name": "",
+  "email": "",
+  "phone": "",
+  "address": "",
+  "summary": "",
+
+  "education": [
+    {
+      "school": "",
+      "degree": "",
+      "field": "",
+      "start_date": "",
+      "end_date": "",
+      "gpa": ""
+    }
+  ],
+
+  "experience": [
+    {
+      "company": "",
+      "role": "",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "bullets": [
+        ""
+      ]
+    }
+  ],
+
+  "projects": [
+    {
+      "name": "",
+      "description": "",
+      "technologies": [
+        ""
+      ],
+      "bullets": [
+        ""
+      ]
+    }
+  ],
+
+  "skills": [
+    ""
+  ],
+
+  "awards": [
+    {
+      "title": "",
+      "issuer": "",
+      "date": "",
+      "description": ""
+    }
+  ]
+}
