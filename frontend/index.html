@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reeracify Resume</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="navbar">
+  <div class="brand">
+    <div class="logo">📄</div>
+    <div>
+      <h2>Reeracify</h2>
+      <p>RESUME OPTIMIZER</p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <select id="categorySelect">
+      <option value="Data / Software">Data / Software</option>
+      <option value="Marketing">Marketing</option>
+      <option value="IT">IT</option>
+      <option value="Admin / Operations">Admin / Operations</option>
+    </select>
+
+    <select id="roleSelect">
+      <option value="">Select Role</option>
+    </select>
+
+    <select id="levelSelect">
+      <option value="Entry-level">Entry-level</option>
+      <option value="Experienced">Experienced</option>
+    </select>
+
+    <label class="upload-btn">
+      ⬆ Upload Resume
+      <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" hidden />
+    </label>
+  </div>
+
+  <button id="linkedinBtn" class="linkedin-btn">in Connect LinkedIn</button>
+</header>
+
+<section id="landing" class="landing">
+  <div class="big-icon">📄</div>
+  <h1>Reeracify</h1>
+  <p>Optimize your resume for ATS systems.</p>
+
+  <button id="demoBtn" class="demo-btn">✨ Try with Demo Resume</button>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<main id="dashboard" class="dashboard hidden">
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel">
+
+    <div class="card ats-card">
+      <h3>ATS SCORE</h3>
+
+      <div class="semi-gauge">
+        <div class="semi-track"></div>
+        <div class="semi-progress"></div>
+        <div class="semi-center">
+          <h1 id="atsScore">--%</h1>
+          <p>Waiting</p>
+        </div>
+      </div>
+
+      <div class="ats-breakdown">
+        <div class="mini-score">
+          <div class="mini-label">Keywords</div>
+          <div class="mini-bar"><div id="keywordBar"></div></div>
+          <b id="keywordPercent">0%</b>
+        </div>
+
+        <div class="mini-score">
+          <div class="mini-label">Format</div>
+          <div class="mini-bar"><div id="formatBar"></div></div>
+          <b id="formatPercent">0%</b>
+        </div>
+
+        <div class="mini-score">
+          <div class="mini-label">Complete</div>
+          <div class="mini-bar"><div id="completeBar"></div></div>
+          <b id="completePercent">0%</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>RANKING</h3>
+      <div class="rank-row">
+        <span>Competitiveness</span>
+        <b id="rankScore">0/100</b>
+      </div>
+      <div class="progress">
+        <div id="rankBar"></div>
+      </div>
+      <p class="muted">Waiting</p>
+    </div>
+
+    <div class="card">
+      <h3>KEYWORDS FOUND</h3>
+      <div id="keywords" class="tags"></div>
+    </div>
+
+    <div class="card suggestion-card">
+      <h3>SUGGESTIONS <span id="suggestionCount" class="pill">0</span></h3>
+      <div id="suggestions">
+        <p>No suggestions yet.</p>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- EDITOR -->
+  <section class="editor-panel">
+    <div class="panel-header">
+      <h3>EDITING</h3>
+    </div>
+
+    <div id="editorContent" class="resume-text">
+      <p class="empty-state">Upload resume to view content.</p>
+    </div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="preview-panel">
+    <div class="panel-header">
+      <h3>👁 PREVIEW</h3>
+    </div>
+
+    <div class="preview-area">
+      <div id="previewPaper" class="paper">
+        <p class="empty-state">Preview will appear here</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer id="bottomMetrics" class="bottom-metrics hidden">
+  <h4>LANGUAGE QUALITY</h4>
+  <div class="metric"><h2 id="summaryScore">0</h2><p>SUMMARY</p></div>
+  <div class="metric"><h2 id="keywordScore">0</h2><p>KEYWORDS</p></div>
+  <div class="metric"><h2 id="impactScore">0</h2><p>IMPACT</p></div>
+  <div class="metric"><h2 id="lengthScore">0</h2><p>LENGTH</p></div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
