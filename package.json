@@ -4,7 +4,8 @@
   "description": "Parses a LinkedIn PDF and returns a JSON Object and/or outputs a JSON file.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha"
+    "test": "mocha",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -25,10 +26,14 @@
   },
   "homepage": "https://github.com/expdesignio/resume-pdf-to-json#readme",
   "dependencies": {
+    "@azure/ai-form-recognizer": "^5.1.0",
     "async": "^3.2.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "extend": "^3.0.0",
     "jsonfile": "^2.2.3",
     "ml-logistic-regression": "^2.0.0",
+    "multer": "^2.1.1",
     "natural": "^8.1.1",
     "openai": "^6.34.0",
     "pdf-text": "^0.4.0",
@@ -40,5 +45,6 @@
     "chai": "^3.4.1",
     "chai-as-promised": "^5.2.0",
     "mocha": "^2.3.4"
-  }
+  },
+  "type": "module"
 }
