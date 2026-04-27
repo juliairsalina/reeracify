@@ -30,17 +30,20 @@
     </select>
 
     <select id="levelSelect">
-      <option value="Entry-level">Entry-level</option>
-      <option value="Experienced">Experienced</option>
+      <option value="">Select Level</option>
     </select>
 
     <label class="upload-btn">
       ⬆ Upload Resume
       <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" hidden />
     </label>
+
+    <!-- Temporary button while preprocessing is not ready.
+         This directly calls backend /evaluate-file, which reads sample/final.json. -->
+    <button id="evaluateFileBtn" type="button">Evaluate final.json</button>
   </div>
 
-  <button id="linkedinBtn" class="linkedin-btn">in Connect LinkedIn</button>
+  <button id="linkedinBtn" class="linkedin-btn" type="button">in Connect LinkedIn</button>
 </header>
 
 <section id="landing" class="landing">
@@ -48,7 +51,8 @@
   <h1>Reeracify</h1>
   <p>Optimize your resume for ATS systems.</p>
 
-  <button id="demoBtn" class="demo-btn">✨ Try with Demo Resume</button>
+  <button id="demoBtn" class="demo-btn" type="button">✨ Try with Demo Resume</button>
+  <small>For now, upload can be used as a trigger after preprocessing creates sample/final.json.</small>
 </section>
 
 <!-- ================= DASHBOARD ================= -->
@@ -65,7 +69,7 @@
         <div class="semi-progress"></div>
         <div class="semi-center">
           <h1 id="atsScore">--%</h1>
-          <p>Waiting</p>
+          <p id="atsStatusText">Waiting</p>
         </div>
       </div>
 
@@ -99,7 +103,7 @@
       <div class="progress">
         <div id="rankBar"></div>
       </div>
-      <p class="muted">Waiting</p>
+      <p id="competitivenessText" class="muted">Waiting</p>
     </div>
 
     <div class="card">
@@ -107,8 +111,20 @@
       <div id="keywords" class="tags"></div>
     </div>
 
+    <div class="card">
+      <h3>MISSING KEYWORDS</h3>
+      <div id="missingKeywords" class="tags"></div>
+    </div>
+
     <div class="card suggestion-card">
       <h3>SUGGESTIONS <span id="suggestionCount" class="pill">0</span></h3>
+
+      <!-- Backend Evaluation Agent reasoning -->
+      <div id="evaluationReasoning">
+        <p>No evaluation yet.</p>
+      </div>
+
+      <!-- Rule-based + Evaluation Agent suggestions -->
       <div id="suggestions">
         <p>No suggestions yet.</p>
       </div>
@@ -120,17 +136,28 @@
   <section class="editor-panel">
     <div class="panel-header">
       <h3>EDITING</h3>
+      <span class="pill">Click weak bullets for rewrite</span>
     </div>
 
+    <!-- script.js should render bullets here.
+         Each bullet should preserve backend bullet_id, e.g. exp_1_b1 or proj_1_b1. -->
     <div id="editorContent" class="resume-text">
-      <p class="empty-state">Upload resume to view content.</p>
+      <p class="empty-state">Upload resume or evaluate final.json to view content.</p>
     </div>
+
+    <p class="hint">
+      Weak bullets returned from the backend can be highlighted here. When clicked, frontend calls /rewrite.
+    </p>
   </section>
 
   <!-- PREVIEW -->
   <section class="preview-panel">
     <div class="panel-header">
       <h3>👁 PREVIEW</h3>
+
+      <div class="preview-actions">
+        <button id="reevaluateFileBtn" type="button">Reevaluate</button>
+      </div>
     </div>
 
     <div class="preview-area">
@@ -149,7 +176,31 @@
   <div class="metric"><h2 id="keywordScore">0</h2><p>KEYWORDS</p></div>
   <div class="metric"><h2 id="impactScore">0</h2><p>IMPACT</p></div>
   <div class="metric"><h2 id="lengthScore">0</h2><p>LENGTH</p></div>
+
+  <button id="saveResumeBtn" type="button">Save Manual Edits</button>
 </footer>
+
+<!-- ================= REWRITE MODAL ================= -->
+<section id="rewriteModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Rewrite Suggestion</h3>
+
+    <p class="muted">Selected bullet</p>
+    <p id="selectedBulletText">No bullet selected.</p>
+
+    <input type="hidden" id="selectedBulletId" />
+
+    <div id="rewriteSuggestions">
+      <p>No rewrite suggestions yet.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button id="acceptRewriteBtn" type="button">Accept Suggestion</button>
+      <button id="ignoreRewriteBtn" type="button">Ignore</button>
+      <button id="closeRewriteModalBtn" type="button">Close</button>
+    </div>
+  </div>
+</section>
 
 <script src="script.js"></script>
 </body>
