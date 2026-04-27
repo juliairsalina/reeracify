@@ -1,0 +1,85 @@
+{
+  "target_role": "Data Analyst",
+  "target_level": "Entry-level",
+  "education": [
+    {
+      "school": "Riverside State University",
+      "degree": "Bachelor of Science",
+      "field": "Information Systems",
+      "start_date": "2021",
+      "end_date": "2025",
+      "gpa": "3.72/4.00"
+    }
+  ],
+  "experience": [
+    {
+      "company": "BrightCart Retail",
+      "role": "Data Analyst Intern",
+      "start_date": "2024-06",
+      "end_date": "2024-08",
+      "description": "Supported sales or operations analytics for a mid-sized retail company.",
+      "bullets": [
+        "Analyse weeekly sale data using Excel to identifies category-level revenue trends across 12 store location.",
+        "Built a Tableau dashboard to visualize product performance, regional sales, and monthly revenue changes for the operations team.",
+        "Cleaned and validated 18,000+ transaction records using Python and pandas, reducing duplicate and incomplete records before reporting.",
+        "Prepared weekly data summaries that helped managers track slow-moving inventory and seasonal demand patterns."
+      ]
+    },
+    {
+      "company": "Campus Career Center",
+      "role": "Student Data Assistant",
+      "start_date": "2023-09",
+      "end_date": "2024-05",
+      "description": "Assisted with student engagement reporting and survey data organization.",
+      "bullets": [
+        "Organized survey responses from 500+ students and created summary tables for career workshop feedback.",
+        "Used Excel pivot tables to compare attendance trends across 8 career events.",
+        "Helped with preparing monthly reports for staff meetings."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Customer Churn Analysis",
+      "description": "Analyzed customer churn patterns using a public subscription dataset.",
+      "technologies": ["Python", "pandas", "scikit-learn", "Matplotlib"],
+      "bullets": [
+        "Explored 7,000+ customer records to identify churn patterns related to contract type, monthly charges, and customer tenure.",
+        "Built a logistic regression model to estimate churn risk and evaluated performance using accuracy, precision, recall, and F1-score.",
+        "Created visualizations showing churn differences by payment method, contract length, and service usage."
+      ]
+    },
+    {
+      "name": "Sales Performance Dashboard",
+      "description": "Created an interactive dashboard for monitoring sales trends and product performance.",
+      "technologies": ["Tableau", "Excel"],
+      "bullets": [
+        "Designed a Tableau dashboard showing monthly revenue, top products, regional sales, and profit margin trends.",
+        "Wrote queries to aggregate sales data by product category, region, and month.",
+        "Added filters for region, product category, and sales period to support flexible business analysis."
+      ]
+    },
+    {
+      "name": "Student Study Habits Survey Analysis",
+      "description": "Analyzed survey data to understand relationships between study habits and academic performance.",
+      "technologies": ["Python", "pandas", "Excel"],
+      "bullets": [
+        "Cleaned survey data from 300+ student responses and handled missing values before analysis.",
+        "Compared study hours, sleep duration, and assignment completion patterns using descriptive statistics.",
+        "Summarized findings in a short report with charts and practical recommendations."
+      ]
+    }
+  ],
+  "skills": [
+    "Python",
+    "Excel",
+    "Tableau",
+    "Power BI",
+    "Matplotlib",
+    "scikit-learn",
+    "Data Analysis",
+    "Data Visualization",
+    "Dashboard Design",
+    "Data Cleaning"
+  ]
+}
