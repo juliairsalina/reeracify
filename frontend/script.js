@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/analyze-resume";
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 const landing = document.getElementById("landing");
 const dashboard = document.getElementById("dashboard");
@@ -100,54 +100,50 @@ function setLoadingState() {
   previewPaper.innerHTML = '<p class="empty-state">Generating preview...</p>';
 }
 
-document.getElementById("zoomIn").addEventListener("click", function () {
-  const paper = document.getElementById("previewPaper");
-  let currentZoom = Number(paper.dataset.zoom || 1);
-  currentZoom += 0.1;
-  paper.dataset.zoom = currentZoom;
-  paper.style.transform = `scale(${currentZoom})`;
-  document.getElementById("zoomText").textContent = Math.round(48 * currentZoom) + "%";
-});
-
-document.getElementById("zoomOut").addEventListener("click", function () {
-  const paper = document.getElementById("previewPaper");
-  let currentZoom = Number(paper.dataset.zoom || 1);
-  currentZoom -= 0.1;
-  if (currentZoom < 0.6) currentZoom = 0.6;
-  paper.dataset.zoom = currentZoom;
-  paper.style.transform = `scale(${currentZoom})`;
-  document.getElementById("zoomText").textContent = Math.round(48 * currentZoom) + "%";
-});
-
-document.getElementById("downloadBtn").addEventListener("click", function () {
-  window.print();
-});
-
-document.getElementById("reevaluateBtn").addEventListener("click", function () {
-  alert("Re-evaluate will call backend after analyze endpoint is confirmed.");
-});
-
 function updatePreview() {
   previewPaper.innerHTML = editorContent.innerHTML;
 }
 
+async function evaluateFromFinalJson() {
+  const response = await fetch(`${API_BASE_URL}/evaluate-file`, {
+    method: "POST"
+  });
+
+  if (!response.ok) {
+    throw new Error("Evaluation failed: " + response.status);
+  }
+
+  const data = await response.json();
+  renderBackendData(data);
+}
+
 function renderBackendData(data) {
-  const score = data.ats_score ?? data.atsScore ?? 0;
+  const score = data.ats_score ?? 0;
+  const ruleSignals = data.rule_based_signals || {};
+  const evaluation = data.evaluation_agent_result || {};
+
+  const keywordResult = ruleSignals.keyword_result || {};
+  const presentKeywords = keywordResult.present_keywords || [];
+  const missingKeywords = keywordResult.missing_keywords || [];
+
+  const weakPhraseFlags = ruleSignals.weak_phrase_flags || [];
+  const grammarFlags = ruleSignals.grammar_flags || [];
+  const weakBullets = evaluation.weak_bullets || [];
+  const priorities = evaluation.improvement_priorities || [];
+  const competitiveness = evaluation.competitiveness_category || "Waiting";
 
   atsScore.textContent = score + "%";
   setGauge(score);
 
-  const rank = data.rank_score ?? data.rankScore ?? score;
-  rankScore.textContent = rank + "/100";
-  rankBar.style.width = rank + "%";
+  rankScore.textContent = competitiveness;
+  rankBar.style.width = score + "%";
 
-  const keywordResult = data.keyword_result || {};
-  const presentKeywords = keywordResult.present_keywords || data.keywords || [];
-  const missingKeywords = keywordResult.missing_keywords || [];
+  const keywordPercent = Math.round(
+    (presentKeywords.length / Math.max(presentKeywords.length + missingKeywords.length, 1)) * 100
+  );
 
-  const keywordPercent = data.keywordScore ?? Math.round((presentKeywords.length / Math.max(presentKeywords.length + missingKeywords.length, 1)) * 100);
-  const formatPercent = data.formatScore ?? score;
-  const completePercent = data.completeScore ?? score;
+  const formatPercent = score;
+  const completePercent = score;
 
   document.getElementById("keywordPercent").textContent = keywordPercent + "%";
   document.getElementById("formatPercent").textContent = formatPercent + "%";
@@ -170,17 +166,21 @@ function renderBackendData(data) {
     suggestions.push(`Missing keyword: ${keyword}`);
   });
 
-  (data.weak_phrase_flags || []).forEach(item => {
+  weakPhraseFlags.forEach(item => {
     suggestions.push(item.reason || `Weak phrase found: ${item.text}`);
   });
 
-  (data.grammar_flags || []).forEach(item => {
+  grammarFlags.forEach(item => {
     if (item.text) suggestions.push(`Grammar issue: ${item.text}`);
   });
 
-  if (data.suggestions) {
-    data.suggestions.forEach(item => suggestions.push(item));
-  }
+  weakBullets.forEach(item => {
+    suggestions.push(item.reason || `Weak bullet: ${item.text}`);
+  });
+
+  priorities.forEach(item => {
+    suggestions.push(item);
+  });
 
   const suggestionsBox = document.getElementById("suggestions");
   const suggestionCount = document.getElementById("suggestionCount");
@@ -196,12 +196,22 @@ function renderBackendData(data) {
     });
   }
 
-  if (data.resume_html) {
-    editorContent.innerHTML = data.resume_html;
-  } else if (data.extracted_text) {
-    editorContent.innerHTML = `<pre>${data.extracted_text}</pre>`;
+  const allBullets = ruleSignals.all_bullets || [];
+
+  if (allBullets.length > 0) {
+    editorContent.innerHTML = "";
+
+    allBullets.forEach(bullet => {
+      editorContent.innerHTML += `
+        <p>
+          <span class="highlight" data-bullet-id="${bullet.id}">
+            ${bullet.text}
+          </span>
+        </p>
+      `;
+    });
   } else {
-    editorContent.innerHTML = '<p class="empty-state">Resume content received, but no preview text returned from backend.</p>';
+    editorContent.innerHTML = '<p class="empty-state">Resume content received, but no bullets returned from backend.</p>';
   }
 
   updatePreview();
@@ -219,28 +229,11 @@ resumeUpload.addEventListener("change", async function () {
 
   setLoadingState();
 
-  const formData = new FormData();
-  formData.append("resume", file);
-  formData.append("category", categorySelect.value);
-  formData.append("target_role", roleSelect.value);
-  formData.append("target_level", levelSelect.value);
-
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      body: formData
-    });
-
-    if (!response.ok) {
-      throw new Error("Backend error: " + response.status);
-    }
-
-    const data = await response.json();
-    renderBackendData(data);
-
+    await evaluateFromFinalJson();
   } catch (error) {
     console.error(error);
-    alert("Cannot connect to backend. Make sure backend is running on " + API_URL);
+    alert("Cannot connect to backend. Make sure FastAPI is running on " + API_BASE_URL);
   }
 });
 
@@ -252,5 +245,50 @@ if (demoBtn) {
     alert("Demo data removed. Please upload a real resume.");
   });
 }
+
+document.getElementById("zoomIn").addEventListener("click", function () {
+  const paper = document.getElementById("previewPaper");
+  let currentZoom = Number(paper.dataset.zoom || 1);
+  currentZoom += 0.1;
+  paper.dataset.zoom = currentZoom;
+  paper.style.transform = `scale(${currentZoom})`;
+  document.getElementById("zoomText").textContent = Math.round(48 * currentZoom) + "%";
+});
+
+document.getElementById("zoomOut").addEventListener("click", function () {
+  const paper = document.getElementById("previewPaper");
+  let currentZoom = Number(paper.dataset.zoom || 1);
+  currentZoom -= 0.1;
+
+  if (currentZoom < 0.6) currentZoom = 0.6;
+
+  paper.dataset.zoom = currentZoom;
+  paper.style.transform = `scale(${currentZoom})`;
+  document.getElementById("zoomText").textContent = Math.round(48 * currentZoom) + "%";
+});
+
+document.getElementById("downloadBtn").addEventListener("click", function () {
+  window.print();
+});
+
+document.getElementById("reevaluateBtn").addEventListener("click", async function () {
+  setLoadingState();
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/reevaluate-file`, {
+      method: "POST"
+    });
+
+    if (!response.ok) {
+      throw new Error("Re-evaluation failed: " + response.status);
+    }
+
+    const data = await response.json();
+    renderBackendData(data);
+  } catch (error) {
+    console.error(error);
+    alert("Cannot re-evaluate. Make sure FastAPI is running on " + API_BASE_URL);
+  }
+});
 
 loadRoles();
