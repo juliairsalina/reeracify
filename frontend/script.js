@@ -1,645 +1,229 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Inter, Arial, sans-serif;
-  background: #e9edf3;
-  color: #111827;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.navbar {
-  height: 72px;
-  background: white;
-  border-bottom: 1px solid #d9dee8;
-  display: flex;
-  align-items: center;
-  padding: 0 22px;
-  gap: 22px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-right: 20px;
-  border-right: 1px solid #d9dee8;
-}
-
-.logo,
-.big-icon {
-  background: #3761b6;
-  color: white;
-  border-radius: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo {
-  width: 34px;
-  height: 34px;
-}
-
-.brand h2 {
-  margin: 0;
-  font-size: 19px;
-}
-
-.brand p {
-  margin: 3px 0 0;
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: #64748b;
-}
-
-.controls {
-  display: flex;
-  gap: 12px;
-}
-
-select,
-button,
-.upload-btn {
-  background: white;
-  border: 1px solid #d6dce8;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
-}
-
-.upload-btn {
-  display: inline-block;
-}
-
-.linkedin-btn {
-  margin-left: auto;
-  color: #2563eb;
-  border-color: #bfdbfe;
-}
-
-.landing {
-  height: calc(100vh - 72px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #0f172a;
-}
-
-.big-icon {
-  width: 82px;
-  height: 82px;
-  font-size: 38px;
-  margin-bottom: 22px;
-  box-shadow: 0 12px 28px rgba(55, 97, 182, 0.35);
-}
-
-.landing h1 {
-  font-size: 40px;
-  margin: 0 0 8px;
-}
-
-.landing p {
-  max-width: 470px;
-  color: #64748b;
-  font-size: 20px;
-  line-height: 1.45;
-}
-
-.steps {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 32px 0;
-}
-
-.step {
-  width: 120px;
-  height: 88px;
-  background: white;
-  border-radius: 12px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
-}
-
-.step span {
-  font-size: 11px;
-  color: #64748b;
-}
-
-.demo-btn {
-  width: 230px;
-  padding: 13px;
-}
-
-.landing small {
-  margin-top: 10px;
-  color: #64748b;
-}
-
-.dashboard {
-  display: grid;
-  grid-template-columns: 230px 1fr 1fr;
-  gap: 16px;
-  padding: 16px 22px 0;
-}
-
-.left-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.card,
-.editor-panel,
-.preview-panel {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e5e7eb;
-}
+const API_URL = "http://localhost:5000/analyze-resume";
 
-.card {
-  padding: 18px;
-}
-
-.card h3,
-.panel-header h3 {
-  margin: 0;
-  font-size: 13px;
-  color: #6b7280;
-  letter-spacing: 0.8px;
-}
-
-.gauge {
-  width: 140px;
-  height: 80px;
-  margin: 20px auto 0;
-  position: relative;
-}
-
-.gauge::before {
-  content: "";
-  width: 130px;
-  height: 65px;
-  border: 8px solid #e5e7eb;
-  border-bottom: none;
-  border-radius: 130px 130px 0 0;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.gauge-fill {
-  width: 130px;
-  height: 65px;
-  border: 8px solid #22c55e;
-  border-bottom: none;
-  border-radius: 130px 130px 0 0;
-  position: absolute;
-  left: 0;
-  top: 0;
-  clip-path: polygon(0 0, 78% 0, 78% 100%, 0 100%);
-}
-
-.gauge-cover {
-  position: absolute;
-  width: 100%;
-  top: 34px;
-  text-align: center;
-}
-
-.gauge-cover h1 {
-  margin: 0;
-  font-size: 34px;
-}
-
-.gauge-cover p {
-  margin: 6px 0 0;
-  color: #22c55e;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.rank-row {
-  display: flex;
-  justify-content: space-between;
-  margin: 18px 0 8px;
-  color: #6b7280;
-  font-size: 13px;
-}
-
-.progress {
-  height: 10px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-#rankBar {
-  width: 0%;
-  height: 100%;
-  background: #f59e0b;
-  border-radius: 999px;
-}
+const landing = document.getElementById("landing");
+const dashboard = document.getElementById("dashboard");
+const bottomMetrics = document.getElementById("bottomMetrics");
 
-.muted {
-  color: #94a3b8;
-  font-size: 12px;
-}
+const resumeUpload = document.getElementById("resumeUpload");
+const demoBtn = document.getElementById("demoBtn");
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
+const categorySelect = document.getElementById("categorySelect");
+const roleSelect = document.getElementById("roleSelect");
+const levelSelect = document.getElementById("levelSelect");
 
-.tags span {
-  background: #e5e7eb;
-  padding: 5px 11px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748b;
-}
+const editorContent = document.getElementById("editorContent");
+const previewPaper = document.getElementById("previewPaper");
 
-.suggestion-card p {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 13px;
-}
+const atsScore = document.getElementById("atsScore");
+const rankScore = document.getElementById("rankScore");
+const rankBar = document.getElementById("rankBar");
 
-.pill {
-  background: #e5e7eb;
-  color: #64748b;
-  border-radius: 999px;
-  padding: 4px 9px;
-  font-size: 12px;
-}
+const jobData = {
+  "Data / Software": {
+    "Data Analyst": ["Entry-level", "Experienced"],
+    "Backend Developer": ["Entry-level", "Experienced"]
+  },
+  "Marketing": {
+    "Marketing Associate": ["Entry-level", "Experienced"],
+    "Digital Marketing Specialist": ["Entry-level", "Experienced"]
+  },
+  "IT": {
+    "IT Support Specialist": ["Entry-level", "Experienced"],
+    "System Administrator": ["Entry-level", "Experienced"]
+  },
+  "Admin / Operations": {
+    "Administrative Assistant": ["Entry-level", "Experienced"],
+    "Operations Coordinator": ["Entry-level", "Experienced"],
+    "Human Resources Assistant": ["Entry-level", "Experienced"],
+    "Project Coordinator": ["Entry-level", "Experienced"],
+    "Customer Success Associate": ["Entry-level", "Experienced"]
+  }
+};
 
-.editor-panel,
-.preview-panel {
-  height: 450px;
-  overflow: hidden;
-}
+function loadRoles() {
+  roleSelect.innerHTML = '<option value="">Select Role</option>';
+  levelSelect.innerHTML = '<option value="">Select Level</option>';
 
-.panel-header {
-  height: 44px;
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid #e5e7eb;
-}
+  const roles = jobData[categorySelect.value];
+  if (!roles) return;
 
-.resume-text {
-  height: 375px;
-  padding: 16px;
-  overflow-y: auto;
-  font-size: 14px;
-  line-height: 1.8;
-  color: #4b5563;
+  Object.keys(roles).forEach(role => {
+    roleSelect.innerHTML += `<option value="${role}">${role}</option>`;
+  });
 }
 
-.resume-text h2 {
-  font-size: 16px;
-  color: #111827;
-}
+function loadLevels() {
+  levelSelect.innerHTML = '<option value="">Select Level</option>';
 
-.resume-text h4 {
-  color: #111827;
-  margin-bottom: 4px;
-}
+  const levels = jobData[categorySelect.value]?.[roleSelect.value];
+  if (!levels) return;
 
-.highlight {
-  background: #fde68a;
-  border-radius: 4px;
-  padding: 2px 4px;
-  cursor: pointer;
+  levels.forEach(level => {
+    levelSelect.innerHTML += `<option value="${level}">${level}</option>`;
+  });
 }
 
-.warning {
-  color: #b91c1c;
-  font-weight: 700;
+function showDashboard() {
+  landing.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+  bottomMetrics.classList.remove("hidden");
 }
 
-.hint {
-  font-size: 11px;
-  padding-left: 14px;
-  color: #64748b;
-}
+function setGauge(score) {
+  const progress = document.querySelector(".semi-progress");
+  if (!progress) return;
 
-.preview-actions {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  const safeScore = Math.max(0, Math.min(score, 100));
+  progress.style.clipPath = `inset(0 ${100 - safeScore}% 0 0)`;
 }
 
-.preview-actions button {
-  padding: 7px 10px;
-  font-size: 8px;
-}
+function setLoadingState() {
+  showDashboard();
 
-#zoomText {
-  color: #64748b;
-  font-size: 12px;
-}
+  atsScore.textContent = "Loading...";
+  rankScore.textContent = "Loading...";
+  rankBar.style.width = "0%";
 
-.preview-area {
-  height: 405px;
-  background: #f1f5f9;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
+  document.getElementById("keywordPercent").textContent = "0%";
+  document.getElementById("formatPercent").textContent = "0%";
+  document.getElementById("completePercent").textContent = "0%";
 
-.paper {
-  width: 305px;
-  min-height: 430px;
-  background: white;
-  padding: 28px;
-  font-size: 8px;
-  line-height: 1.55;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
-  transform-origin: top center;
-}
+  document.getElementById("keywordBar").style.width = "0%";
+  document.getElementById("formatBar").style.width = "0%";
+  document.getElementById("completeBar").style.width = "0%";
 
-.paper h2 {
-  font-size: 10px;
-  text-align: center;
-}
+  document.getElementById("keywords").innerHTML = "";
+  document.getElementById("suggestions").innerHTML = "<p>Analyzing resume...</p>";
+  document.getElementById("suggestionCount").textContent = "0";
 
-.paper h4 {
-  font-size: 8px;
-  margin-bottom: 2px;
+  editorContent.innerHTML = '<p class="empty-state">Extracting resume content...</p>';
+  previewPaper.innerHTML = '<p class="empty-state">Generating preview...</p>';
 }
 
-.bottom-metrics {
-  margin-top: 0;
-  height: 90px;
-  background: white;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 28px;
+function updatePreview() {
+  previewPaper.innerHTML = editorContent.innerHTML;
 }
 
-.bottom-metrics h4 {
-  font-size: 11px;
-  color: #64748b;
-  margin-right: 10px;
-}
+function renderBackendData(data) {
+  const score = data.ats_score ?? data.atsScore ?? 0;
 
-.metric {
-  width: 70px;
-  height: 70px;
-  background: #ecfdf5;
-  border-radius: 10px;
-  text-align: center;
-  padding: 8px;
-}
+  atsScore.textContent = score + "%";
+  setGauge(score);
 
-.metric h2 {
-  margin: 0;
-  color: #10b981;
-}
+  const rank = data.rank_score ?? data.rankScore ?? score;
+  rankScore.textContent = rank + "/100";
+  rankBar.style.width = rank + "%";
 
-.metric div {
-  height: 3px;
-  background: #10b981;
-  border-radius: 999px;
-  margin: 4px 0;
-}
+  const keywordResult = data.keyword_result || {};
+  const presentKeywords = keywordResult.present_keywords || data.keywords || [];
+  const missingKeywords = keywordResult.missing_keywords || [];
 
-.metric p {
-  margin: 0;
-  font-size: 9px;
-  color: #64748b;
-  font-weight: 700;
-}
+  const keywordPercent = data.keywordScore ?? Math.round((presentKeywords.length / Math.max(presentKeywords.length + missingKeywords.length, 1)) * 100);
+  const formatPercent = data.formatScore ?? score;
+  const completePercent = data.completeScore ?? score;
 
-#reevaluateBtn {
-  margin-left: auto;
-}
+  document.getElementById("keywordPercent").textContent = keywordPercent + "%";
+  document.getElementById("formatPercent").textContent = formatPercent + "%";
+  document.getElementById("completePercent").textContent = completePercent + "%";
 
-.tooltip {
-  position: absolute;
-  width: 280px;
-  background: white;
-  border: 1px solid #d6dce8;
-  border-radius: 12px;
-  padding: 14px;
-  z-index: 99;
-  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.25);
-}
+  document.getElementById("keywordBar").style.width = keywordPercent + "%";
+  document.getElementById("formatBar").style.width = formatPercent + "%";
+  document.getElementById("completeBar").style.width = completePercent + "%";
 
-.tooltip h4 {
-  margin: 0 0 8px;
-}
+  const keywordsBox = document.getElementById("keywords");
+  keywordsBox.innerHTML = "";
 
-.tooltip p {
-  font-size: 13px;
-  color: #4b5563;
-}
+  presentKeywords.forEach(keyword => {
+    keywordsBox.innerHTML += `<span>${keyword}</span>`;
+  });
 
-.tooltip button {
-  width: 100%;
-  background: #2563eb;
-  color: white;
-}
+  const suggestions = [];
 
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  missingKeywords.forEach(keyword => {
+    suggestions.push(`Missing keyword: ${keyword}`);
+  });
 
-.modal-box {
-  width: 360px;
-  background: white;
-  padding: 24px;
-  border-radius: 16px;
-  text-align: center;
-}
+  (data.weak_phrase_flags || []).forEach(item => {
+    suggestions.push(item.reason || `Weak phrase found: ${item.text}`);
+  });
 
-.modal-box button {
-  background: #2563eb;
-  color: white;
-}
+  (data.grammar_flags || []).forEach(item => {
+    if (item.text) suggestions.push(`Grammar issue: ${item.text}`);
+  });
 
-@media (max-width: 1000px) {
-  .dashboard {
-    grid-template-columns: 1fr;
+  if (data.suggestions) {
+    data.suggestions.forEach(item => suggestions.push(item));
   }
 
-  .navbar {
-    height: auto;
-    flex-wrap: wrap;
-    padding: 14px;
+  const suggestionsBox = document.getElementById("suggestions");
+  const suggestionCount = document.getElementById("suggestionCount");
+
+  suggestionsBox.innerHTML = "";
+  suggestionCount.textContent = suggestions.length;
+
+  if (suggestions.length === 0) {
+    suggestionsBox.innerHTML = "<p>No major issues found.</p>";
+  } else {
+    suggestions.forEach(item => {
+      suggestionsBox.innerHTML += `<p>⚠ ${item}</p>`;
+    });
   }
 
-  .linkedin-btn {
-    margin-left: 0;
+  if (data.resume_html) {
+    editorContent.innerHTML = data.resume_html;
+  } else if (data.extracted_text) {
+    editorContent.innerHTML = `<pre>${data.extracted_text}</pre>`;
+  } else {
+    editorContent.innerHTML = '<p class="empty-state">Resume content received, but no preview text returned from backend.</p>';
   }
 
-  .landing {
-    height: auto;
-    padding: 60px 20px;
+  updatePreview();
+}
+
+resumeUpload.addEventListener("change", async function () {
+  const file = resumeUpload.files[0];
+  if (!file) return;
+
+  if (!roleSelect.value || !levelSelect.value) {
+    alert("Please select role and level first.");
+    resumeUpload.value = "";
+    return;
   }
 
-  .steps {
-    flex-wrap: wrap;
-    justify-content: center;
+  setLoadingState();
+
+  const formData = new FormData();
+  formData.append("resume", file);
+  formData.append("category", categorySelect.value);
+  formData.append("target_role", roleSelect.value);
+  formData.append("target_level", levelSelect.value);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error("Backend error: " + response.status);
+    }
+
+    const data = await response.json();
+    renderBackendData(data);
+
+  } catch (error) {
+    console.error(error);
+    alert("Cannot connect to backend. Make sure backend is running on " + API_URL);
   }
+});
+
+categorySelect.addEventListener("change", loadRoles);
+roleSelect.addEventListener("change", loadLevels);
+
+if (demoBtn) {
+  demoBtn.addEventListener("click", function () {
+    alert("Demo data removed. Please upload a real resume.");
+  });
 }
 
-.ats-card {
-  min-height: 285px;
-}
-
-.ats-breakdown {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.mini-score {
-  text-align: center;
-}
-
-.mini-label {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.mini-bar {
-  width: 100%;
-  height: 9px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.mini-bar div {
-  height: 100%;
-  border-radius: 999px;
-}
-
-#keywordBar {
-  width: 0%;
-  background: #6366f1;
-}
-
-#formatBar {
-  width: 0%;
-  background: #f59e0b;
-}
-
-#completeBar {
-  width: 0%;
-  background: #3b82f6;
-}
-
-.mini-score b {
-  display: block;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #334155;
-}
-
-/* ===== Clean integration update ===== */
-
-.semi-gauge {
-  width: 160px;
-  height: 95px;
-  margin: 20px auto 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.semi-track,
-.semi-progress {
-  position: absolute;
-  width: 160px;
-  height: 80px;
-  border-radius: 160px 160px 0 0;
-  border: 12px solid;
-  border-bottom: 0;
-  left: 0;
-  top: 0;
-}
-
-.semi-track {
-  border-color: #e5e7eb;
-}
-
-.semi-progress {
-  border-color: #22c55e;
-  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-  transition: clip-path 0.6s ease;
-}
-
-.semi-center {
-  position: absolute;
-  width: 100%;
-  top: 32px;
-  text-align: center;
-}
-
-.semi-center h1 {
-  margin: 0;
-  font-size: 32px;
-}
-
-.semi-center p {
-  margin: 4px 0 0;
-  color: #64748b;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-#rankBar,
-#keywordBar,
-#formatBar,
-#completeBar {
-  width: 0%;
-  transition: width 0.5s ease;
-}
-
-.linkedin-btn:hover,
-.demo-btn:hover,
-.upload-btn:hover,
-button:hover,
-select:hover {
-  transform: translateY(-1px);
-}
-
-button,
-.upload-btn,
-select {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
+loadRoles();

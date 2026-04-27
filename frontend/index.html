@@ -18,15 +18,20 @@
   </div>
 
   <div class="controls">
-    <select id="fieldSelect">
-      <option value="Software Engineer">Computer Science</option>
-      <option value="Data Analyst">Data Science</option>
-      <option value="Data Analyst">Bioscience</option>
-    </select> 
+    <select id="categorySelect">
+      <option value="Data / Software">Data / Software</option>
+      <option value="Marketing">Marketing</option>
+      <option value="IT">IT</option>
+      <option value="Admin / Operations">Admin / Operations</option>
+    </select>
+
+    <select id="roleSelect">
+      <option value="">Select Role</option>
+    </select>
 
     <select id="levelSelect">
-      <option value="Entry-level">Beginner</option>
-      <option value="Experienced">Advanced</option>
+      <option value="Entry-level">Entry-level</option>
+      <option value="Experienced">Experienced</option>
     </select>
 
     <label class="upload-btn">
@@ -41,194 +46,110 @@
 <section id="landing" class="landing">
   <div class="big-icon">📄</div>
   <h1>Reeracify</h1>
-  <p>
-    Optimize your resume for ATS systems. Get real-time scoring,
-    smart suggestions, and download an optimized PDF.
-  </p>
-
-  <div class="steps">
-    <div class="step">⬆ <b>Upload</b><span>PDF, DOC, DOCX</span></div>
-    <span>→</span>
-    <div class="step">✨ <b>Analyze</b><span>AI-powered scoring</span></div>
-    <span>→</span>
-    <div class="step">📊 <b>Optimize</b><span>Apply suggestions</span></div>
-    <span>→</span>
-    <div class="step">⬇ <b>Download</b><span>ATS-ready resume</span></div>
-  </div>
+  <p>Optimize your resume for ATS systems.</p>
 
   <button id="demoBtn" class="demo-btn">✨ Try with Demo Resume</button>
-  <small>or upload your own using the toolbar above</small>
 </section>
 
+<!-- ================= DASHBOARD ================= -->
 <main id="dashboard" class="dashboard hidden">
 
+  <!-- LEFT PANEL -->
   <aside class="left-panel">
-    <div class="card ats-card">
-    <h3>ATS SCORE</h3>
 
-    <div class="semi-gauge">
+    <div class="card ats-card">
+      <h3>ATS SCORE</h3>
+
+      <div class="semi-gauge">
         <div class="semi-track"></div>
         <div class="semi-progress"></div>
         <div class="semi-center">
-        <h1 id="atsScore">--%</h1>
-        <p>Waiting</p>
+          <h1 id="atsScore">--%</h1>
+          <p>Waiting</p>
         </div>
+      </div>
+
+      <div class="ats-breakdown">
+        <div class="mini-score">
+          <div class="mini-label">Keywords</div>
+          <div class="mini-bar"><div id="keywordBar"></div></div>
+          <b id="keywordPercent">0%</b>
+        </div>
+
+        <div class="mini-score">
+          <div class="mini-label">Format</div>
+          <div class="mini-bar"><div id="formatBar"></div></div>
+          <b id="formatPercent">0%</b>
+        </div>
+
+        <div class="mini-score">
+          <div class="mini-label">Complete</div>
+          <div class="mini-bar"><div id="completeBar"></div></div>
+          <b id="completePercent">0%</b>
+        </div>
+      </div>
     </div>
-
-    <div class="ats-breakdown">
-        <div class="mini-score">
-        <div class="mini-label">Keywords</div>
-        <div class="mini-bar">
-            <div id="keywordBar"></div>
-        </div>
-        <b id="keywordPercent">85%</b>
-        </div>
-
-        <div class="mini-score">
-        <div class="mini-label">Format</div>
-        <div class="mini-bar">
-            <div id="formatBar"></div>
-        </div>
-        <b id="formatPercent">72%</b>
-        </div>
-
-        <div class="mini-score">
-        <div class="mini-label">Complete</div>
-        <div class="mini-bar">
-            <div id="completeBar"></div>
-        </div>
-        <b id="completePercent">90%</b>
-        </div>
-    </div>
-    </div>  
 
     <div class="card">
       <h3>RANKING</h3>
       <div class="rank-row">
         <span>Competitiveness</span>
-        <b id="rankScore">66/100</b>
+        <b id="rankScore">0/100</b>
       </div>
       <div class="progress">
         <div id="rankBar"></div>
       </div>
-      <p class="muted">Competitive</p>
+      <p class="muted">Waiting</p>
     </div>
 
     <div class="card">
       <h3>KEYWORDS FOUND</h3>
-      <div id="keywords" class="tags">
-        <span>python</span><span>git</span><span>sql</span><span>api</span><span>rest</span>
-      </div>
+      <div id="keywords" class="tags"></div>
     </div>
 
     <div class="card suggestion-card">
-      <h3>SUGGESTIONS <span class="pill">2 items</span></h3>
+      <h3>SUGGESTIONS <span id="suggestionCount" class="pill">0</span></h3>
       <div id="suggestions">
-        <p>Upload resume to generate suggestions.</p>
-        <p>⚠ Improve weak sentence in experience section.</p>
+        <p>No suggestions yet.</p>
       </div>
     </div>
+
   </aside>
 
+  <!-- EDITOR -->
   <section class="editor-panel">
     <div class="panel-header">
       <h3>EDITING</h3>
-      <span class="pill">🛠 2 suggestions</span>
     </div>
 
     <div id="editorContent" class="resume-text">
-      <h2>NUR MUSHIRA BINTI MAZNI</h2>
-      <p>
-        Computer Science student with experience in AI, data analysis, and web development.
-      </p>
-
-      <h4>EXPERIENCE</h4>
-      <p>
-        <span class="highlight" data-suggestion="Developed an interactive dashboard to analyze business data and support data-driven decision making.">
-          Responsible for make dashboard for company data.
-        </span>
-      </p>
-
-      <h4>PROJECTS</h4>
-      <p>
-        <span class="highlight" data-suggestion="Built a machine learning model using Python and Scikit-learn, improving prediction accuracy by 18%.">
-          Made machine learning project for prediction.
-        </span>
-      </p>
-
-      <p class="warning">⚠ Missing phone number</p>
-      <p class="warning">⚠ Missing clear project impact</p>
-
-      <h4>SKILLS & INTERESTS</h4>
-      <p>
-        Python, SQL, Git, REST API, HTML, CSS, JavaScript, Machine Learning, MySQL
-      </p>
+      <p class="empty-state">Upload resume to view content.</p>
     </div>
-
-    <p class="hint">Click on highlighted phrases to see rewrite suggestions</p>
   </section>
 
+  <!-- PREVIEW -->
   <section class="preview-panel">
     <div class="panel-header">
       <h3>👁 PREVIEW</h3>
-      <div class="preview-actions">
-        <button id="zoomOut">🔍−</button>
-        <span id="zoomText">48%</span>
-        <button id="zoomIn">🔍+</button>
-        <button id="downloadBtn">⬇ Download PDF</button>
-      </div>
     </div>
 
     <div class="preview-area">
-      <div id="previewPaper" class="paper"></div>
+      <div id="previewPaper" class="paper">
+        <p class="empty-state">Preview will appear here</p>
+      </div>
     </div>
   </section>
 
 </main>
 
+<!-- ================= FOOTER ================= -->
 <footer id="bottomMetrics" class="bottom-metrics hidden">
   <h4>LANGUAGE QUALITY</h4>
-
-  <div class="metric">
-    <h2 id="summaryScore">10</h2>
-    <div></div>
-    <p>SUMMARY</p>
-  </div>
-
-  <div class="metric">
-    <h2 id="keywordScore">8</h2>
-    <div></div>
-    <p>KEYWORDS</p>
-  </div>
-
-  <div class="metric">
-    <h2 id="impactScore">10</h2>
-    <div></div>
-    <p>IMPACT</p>
-  </div>
-
-  <div class="metric">
-    <h2 id="lengthScore">10</h2>
-    <div></div>
-    <p>LENGTH</p>
-  </div>
-
-  <button id="reevaluateBtn">🔄 Re-evaluate</button>
+  <div class="metric"><h2 id="summaryScore">0</h2><p>SUMMARY</p></div>
+  <div class="metric"><h2 id="keywordScore">0</h2><p>KEYWORDS</p></div>
+  <div class="metric"><h2 id="impactScore">0</h2><p>IMPACT</p></div>
+  <div class="metric"><h2 id="lengthScore">0</h2><p>LENGTH</p></div>
 </footer>
-
-<div id="tooltip" class="tooltip hidden">
-  <h4>AI Rewrite Suggestion</h4>
-  <p id="tooltipText"></p>
-  <button id="applyBtn">Apply suggestion</button>
-</div>
-
-<div id="modal" class="modal hidden">
-  <div class="modal-box">
-    <h2>LinkedIn</h2>
-    <p>LinkedIn update feature will be connected later.</p>
-    <button id="closeModal">OK</button>
-  </div>
-</div>
 
 <script src="script.js"></script>
 </body>
