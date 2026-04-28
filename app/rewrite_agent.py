@@ -1,14 +1,35 @@
 from __future__ import annotations
 
-import asyncio
 import json
 from typing import Any
 
-from agent_framework import Agent
-from agent_framework.foundry import FoundryChatClient
-from azure.identity.aio import AzureCliCredential
+from openai import OpenAI
 
 from app.config import settings
+
+
+# ============================================================
+# OpenAI client setup
+# ============================================================
+
+def get_openai_client() -> OpenAI:
+    if not settings.AZURE_OPENAI_ENDPOINT:
+        raise ValueError("Missing AZURE_OPENAI_ENDPOINT in app/.env")
+
+    if not settings.AZURE_OPENAI_API_KEY:
+        raise ValueError("Missing AZURE_OPENAI_API_KEY in app/.env")
+
+    return OpenAI(
+        base_url=settings.AZURE_OPENAI_ENDPOINT,
+        api_key=settings.AZURE_OPENAI_API_KEY,
+    )
+
+
+def get_deployment_name() -> str:
+    if not settings.AZURE_OPENAI_DEPLOYMENT_NAME:
+        raise ValueError("Missing AZURE_OPENAI_DEPLOYMENT_NAME in app/.env")
+
+    return settings.AZURE_OPENAI_DEPLOYMENT_NAME
 
 
 # ============================================================
@@ -16,13 +37,6 @@ from app.config import settings
 # ============================================================
 
 def extract_json_from_text(text: str) -> dict[str, Any]:
-    """
-    The agent is instructed to return only JSON.
-
-    This helper is defensive:
-    - first tries normal json.loads()
-    - if that fails, extracts the first JSON object from the response
-    """
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -45,18 +59,6 @@ def extract_json_from_text(text: str) -> dict[str, Any]:
 # ============================================================
 
 def validate_rewrite_result(result: dict[str, Any]) -> dict[str, Any]:
-    """
-    Ensures the Rewrite Agent output matches the frontend schema.
-
-    Required field:
-        rewrite_suggestions
-
-    Each suggestion:
-        - suggestion
-        - why_it_is_better
-        - used_signals
-        - caution
-    """
     suggestions = result.get("rewrite_suggestions")
 
     if not isinstance(suggestions, list):
@@ -70,7 +72,6 @@ def validate_rewrite_result(result: dict[str, Any]) -> dict[str, Any]:
             continue
 
         used_signals = item.get("used_signals", [])
-
         if not isinstance(used_signals, list):
             used_signals = []
 
@@ -84,60 +85,7 @@ def validate_rewrite_result(result: dict[str, Any]) -> dict[str, Any]:
         )
 
     result["rewrite_suggestions"] = clean_suggestions
-
     return result
-
-
-# ============================================================
-# Settings helpers
-# ============================================================
-
-def get_foundry_project_endpoint() -> str:
-    """
-    Gets Foundry project endpoint from settings.
-
-    Recommended:
-        FOUNDRY_PROJECT_ENDPOINT
-
-    Fallback:
-        AZURE_AI_PROJECT_ENDPOINT
-    """
-    endpoint = getattr(settings, "FOUNDRY_PROJECT_ENDPOINT", None)
-
-    if not endpoint:
-        endpoint = getattr(settings, "AZURE_AI_PROJECT_ENDPOINT", None)
-
-    if not endpoint:
-        raise ValueError(
-            "Missing Foundry project endpoint. "
-            "Add FOUNDRY_PROJECT_ENDPOINT or AZURE_AI_PROJECT_ENDPOINT in app/.env."
-        )
-
-    return endpoint
-
-
-def get_foundry_model() -> str:
-    """
-    Gets model/deployment name from settings.
-
-    Recommended:
-        FOUNDRY_MODEL
-
-    Fallback:
-        AZURE_OPENAI_DEPLOYMENT_NAME
-    """
-    model = getattr(settings, "FOUNDRY_MODEL", None)
-
-    if not model:
-        model = getattr(settings, "AZURE_OPENAI_DEPLOYMENT_NAME", None)
-
-    if not model:
-        raise ValueError(
-            "Missing Foundry model name. "
-            "Add FOUNDRY_MODEL or AZURE_OPENAI_DEPLOYMENT_NAME in app/.env."
-        )
-
-    return model
 
 
 # ============================================================
@@ -158,12 +106,6 @@ def extract_relevant_grammar_flags(
     selected_bullet: str,
     rule_based_signals: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    """
-    Returns grammar flags relevant to the selected bullet.
-
-    If exact matching fails, returns all grammar flags.
-    This is useful because frontend may not always send bullet IDs yet.
-    """
     grammar_flags = rule_based_signals.get("grammar_flags", [])
 
     if not isinstance(grammar_flags, list):
@@ -178,7 +120,7 @@ def extract_relevant_grammar_flags(
     if exact_matches:
         return exact_matches
 
-    return grammar_flags
+    return []
 
 
 def extract_relevant_weak_phrase_flags(
@@ -199,7 +141,7 @@ def extract_relevant_weak_phrase_flags(
     if exact_matches:
         return exact_matches
 
-    return weak_phrase_flags
+    return []
 
 
 def extract_relevant_measurable_evidence(
@@ -216,11 +158,6 @@ def extract_relevant_measurable_evidence(
 def extract_evaluation_reasoning(
     evaluation_agent_result: dict[str, Any],
 ) -> dict[str, Any]:
-    """
-    Keeps only the useful parts of Evaluation Agent output.
-
-    This avoids sending unnecessary data to the Rewrite Agent.
-    """
     return {
         "competitiveness_category": evaluation_agent_result.get(
             "competitiveness_category", ""
@@ -238,24 +175,14 @@ def extract_evaluation_reasoning(
 # Prompt builder
 # ============================================================
 
-def build_rewrite_prompts(
+def build_rewrite_messages(
     target_role: str,
     target_level: str,
     selected_bullet: str,
     rule_based_signals: dict[str, Any],
     evaluation_agent_result: dict[str, Any],
     user_instruction: str | None = None,
-) -> tuple[str, str]:
-    """
-    Builds the system instruction and user prompt.
-
-    Rewrite Agent receives:
-    - target role
-    - target level
-    - selected bullet
-    - rule-based scoring signals
-    - Evaluation Agent reasoning
-    """
+) -> list[dict[str, str]]:
     missing_keywords = extract_missing_keywords(rule_based_signals)
 
     relevant_grammar_flags = extract_relevant_grammar_flags(
@@ -356,109 +283,14 @@ Input:
 {json.dumps(user_payload, ensure_ascii=False, indent=2)}
 """.strip()
 
-    return system_prompt, user_prompt
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
 
 
 # ============================================================
-# Agent response helper
-# ============================================================
-
-def agent_response_to_text(response: Any) -> str:
-    """
-    Converts Agent Framework response into plain text.
-
-    Different versions may return slightly different objects,
-    so this helper keeps the code stable during debugging.
-    """
-    if response is None:
-        return ""
-
-    if isinstance(response, str):
-        return response
-
-    text = getattr(response, "text", None)
-    if isinstance(text, str):
-        return text
-
-    content = getattr(response, "content", None)
-    if isinstance(content, str):
-        return content
-
-    messages = getattr(response, "messages", None)
-    if messages:
-        last_message = messages[-1]
-        last_text = getattr(last_message, "text", None)
-        if isinstance(last_text, str):
-            return last_text
-
-    return str(response)
-
-
-# ============================================================
-# Async Rewrite Agent runner
-# ============================================================
-
-async def rewrite_bullet_with_agent_async(
-    target_role: str,
-    target_level: str,
-    selected_bullet: str,
-    rule_based_signals: dict[str, Any],
-    evaluation_agent_result: dict[str, Any],
-    user_instruction: str | None = None,
-) -> dict[str, Any]:
-    """
-    Async Rewrite Agent pipeline using Microsoft Agent Framework.
-
-    Flow:
-    1. Build rewrite prompt
-    2. Create Azure CLI credential
-    3. Create FoundryChatClient
-    4. Create Rewrite Agent
-    5. Run agent
-    6. Parse JSON
-    7. Validate schema
-    """
-    system_prompt, user_prompt = build_rewrite_prompts(
-        target_role=target_role,
-        target_level=target_level,
-        selected_bullet=selected_bullet,
-        rule_based_signals=rule_based_signals,
-        evaluation_agent_result=evaluation_agent_result,
-        user_instruction=user_instruction,
-    )
-
-    credential = AzureCliCredential()
-
-    try:
-        client = FoundryChatClient(
-            project_endpoint=get_foundry_project_endpoint(),
-            model=get_foundry_model(),
-            credential=credential,
-        )
-
-        agent = Agent(
-            client=client,
-            name="RewriteAgent",
-            instructions=system_prompt,
-        )
-
-        response = await agent.run(user_prompt)
-        content = agent_response_to_text(response)
-
-        if not content:
-            raise ValueError("Rewrite Agent returned an empty response.")
-
-        parsed_result = extract_json_from_text(content)
-        validated_result = validate_rewrite_result(parsed_result)
-
-        return validated_result
-
-    finally:
-        await credential.close()
-
-
-# ============================================================
-# Sync wrapper used by FastAPI/main.py
+# Main Rewrite Agent function
 # ============================================================
 
 def rewrite_bullet_with_agent(
@@ -470,36 +302,37 @@ def rewrite_bullet_with_agent(
     user_instruction: str | None = None,
 ) -> dict[str, Any]:
     """
-    Sync wrapper so main.py can call this normally.
+    Rewrite Agent using Azure OpenAI API key.
 
-    main.py can do:
-
-        rewrite_bullet_with_agent(
-            target_role=...,
-            target_level=...,
-            selected_bullet=...,
-            rule_based_signals=...,
-            evaluation_agent_result=...,
-        )
+    This version does NOT use:
+    - FoundryChatClient
+    - AzureCliCredential
+    - FOUNDRY_PROJECT_ENDPOINT
     """
-    try:
-        running_loop = asyncio.get_running_loop()
-    except RuntimeError:
-        running_loop = None
+    client = get_openai_client()
+    deployment_name = get_deployment_name()
 
-    if running_loop and running_loop.is_running():
-        raise RuntimeError(
-            "rewrite_bullet_with_agent() was called inside an active event loop. "
-            "Use await rewrite_bullet_with_agent_async(...) instead."
-        )
-
-    return asyncio.run(
-        rewrite_bullet_with_agent_async(
-            target_role=target_role,
-            target_level=target_level,
-            selected_bullet=selected_bullet,
-            rule_based_signals=rule_based_signals,
-            evaluation_agent_result=evaluation_agent_result,
-            user_instruction=user_instruction,
-        )
+    messages = build_rewrite_messages(
+        target_role=target_role,
+        target_level=target_level,
+        selected_bullet=selected_bullet,
+        rule_based_signals=rule_based_signals,
+        evaluation_agent_result=evaluation_agent_result,
+        user_instruction=user_instruction,
     )
+
+    response = client.chat.completions.create(
+        model=deployment_name,
+        messages=messages,
+        temperature=0.4,
+    )
+
+    content = response.choices[0].message.content
+
+    if not content:
+        raise ValueError("Rewrite Agent returned an empty response.")
+
+    parsed_result = extract_json_from_text(content)
+    validated_result = validate_rewrite_result(parsed_result)
+
+    return validated_result

@@ -3,6 +3,7 @@
 // ============================================================
 
 const API_BASE_URL = "http://127.0.0.1:8000";
+const PARSER_API_BASE_URL = "http://127.0.0.1:3000";
 
 // ============================================================
 // DOM elements
@@ -401,26 +402,31 @@ async function ignoreRewrite() {
 // ============================================================
 
 async function runPreprocessingPlaceholder(file) {
-  console.log("Preprocessing placeholder. File selected:", file?.name);
-
-  // Later, when backend upload/preprocessing is ready:
-  /*
   const formData = new FormData();
-  formData.append("resume", file);
-  formData.append("target_role", roleSelect.value);
-  formData.append("target_level", levelSelect.value);
 
-  const response = await fetch(`${API_BASE_URL}/preprocess`, {
+  formData.append("resume", file);
+  formData.append("target_role", roleSelect.value || "Data Analyst");
+  formData.append("target_level", levelSelect.value || "Entry-level");
+
+  const response = await fetch(`${PARSER_API_BASE_URL}/upload`, {
     method: "POST",
     body: formData
   });
 
   if (!response.ok) {
-    throw new Error("Preprocessing failed: " + response.status);
-  }
-  */
+    let detail = "";
 
-  return true;
+    try {
+      const errorBody = await response.json();
+      detail = errorBody.detail || errorBody.error || "";
+    } catch {
+      detail = "";
+    }
+
+    throw new Error(`Preprocessing failed: ${detail || response.status}`);
+  }
+
+  return response.json();
 }
 
 // ============================================================
