@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reeracify Resume</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
 
 <header class="navbar">
@@ -30,17 +31,20 @@
     </select>
 
     <select id="levelSelect">
-      <option value="Entry-level">Entry-level</option>
-      <option value="Experienced">Experienced</option>
+      <option value="">Select Level</option>
     </select>
 
     <label class="upload-btn">
       ⬆ Upload Resume
       <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" hidden />
     </label>
+
+    <button id="evaluateFileBtn" type="button">Evaluate final.json</button>
   </div>
 
-  <button id="linkedinBtn" class="linkedin-btn">in Connect LinkedIn</button>
+  <button id="linkedinBtn" class="linkedin-btn" type="button">
+    in Connect LinkedIn
+  </button>
 </header>
 
 <section id="landing" class="landing">
@@ -48,13 +52,13 @@
   <h1>Reeracify</h1>
   <p>Optimize your resume for ATS systems.</p>
 
-  <button id="demoBtn" class="demo-btn">✨ Try with Demo Resume</button>
+  <button id="demoBtn" class="demo-btn" type="button">
+    ✨ Try with Demo Resume
+  </button>
 </section>
 
-<!-- ================= DASHBOARD ================= -->
 <main id="dashboard" class="dashboard hidden">
 
-  <!-- LEFT PANEL -->
   <aside class="left-panel">
 
     <div class="card ats-card">
@@ -65,7 +69,7 @@
         <div class="semi-progress"></div>
         <div class="semi-center">
           <h1 id="atsScore">--%</h1>
-          <p>Waiting</p>
+          <p id="atsStatusText">Waiting</p>
         </div>
       </div>
 
@@ -99,7 +103,7 @@
       <div class="progress">
         <div id="rankBar"></div>
       </div>
-      <p class="muted">Waiting</p>
+      <p id="competitivenessText" class="muted">Waiting</p>
     </div>
 
     <div class="card">
@@ -107,8 +111,18 @@
       <div id="keywords" class="tags"></div>
     </div>
 
+    <div class="card">
+      <h3>MISSING KEYWORDS</h3>
+      <div id="missingKeywords" class="tags"></div>
+    </div>
+
     <div class="card suggestion-card">
       <h3>SUGGESTIONS <span id="suggestionCount" class="pill">0</span></h3>
+
+      <div id="evaluationReasoning">
+        <p>No evaluation yet.</p>
+      </div>
+
       <div id="suggestions">
         <p>No suggestions yet.</p>
       </div>
@@ -116,10 +130,10 @@
 
   </aside>
 
-  <!-- EDITOR -->
   <section class="editor-panel">
     <div class="panel-header">
       <h3>EDITING</h3>
+      <span class="pill">Click weak bullets for rewrite</span>
     </div>
 
     <div id="editorContent" class="resume-text">
@@ -127,18 +141,18 @@
     </div>
   </section>
 
-  <!-- PREVIEW -->
   <section class="preview-panel">
-      <div class="panel-header">
-    <h3>👁 PREVIEW</h3>
+    <div class="panel-header">
+      <h3>👁 PREVIEW</h3>
 
-    <div class="preview-actions">
-      <button id="zoomOut">🔍−</button>
-      <span id="zoomText">48%</span>
-      <button id="zoomIn">🔍+</button>
-      <button id="downloadBtn">⬇ Download PDF</button>
+      <div class="preview-actions">
+        <button id="zoomOut" type="button">🔍−</button>
+        <span id="zoomText">48%</span>
+        <button id="zoomIn" type="button">🔍+</button>
+        <button id="downloadBtn" type="button">⬇ Download PDF</button>
+        <button id="reevaluateFileBtn" type="button">🔄 Re-evaluate</button>
+      </div>
     </div>
-  </div>
 
     <div class="preview-area">
       <div id="previewPaper" class="paper">
@@ -149,18 +163,54 @@
 
 </main>
 
+<footer id="bottomMetrics" class="bottom-metrics hidden">
+  <h4>LANGUAGE QUALITY</h4>
 
-  <footer id="bottomMetrics" class="bottom-metrics hidden">
-    <h4>LANGUAGE QUALITY</h4>
+  <div class="metric">
+    <h2 id="summaryScore">0</h2>
+    <p>SUMMARY</p>
+  </div>
 
-    <div class="metric"><h2 id="summaryScore">0</h2><p>SUMMARY</p></div>
-    <div class="metric"><h2 id="keywordScore">0</h2><p>KEYWORDS</p></div>
-    <div class="metric"><h2 id="impactScore">0</h2><p>IMPACT</p></div>
-    <div class="metric"><h2 id="lengthScore">0</h2><p>LENGTH</p></div>
+  <div class="metric">
+    <h2 id="keywordScore">0</h2>
+    <p>KEYWORDS</p>
+  </div>
 
-    <button id="reevaluateBtn">🔄 Re-evaluate</button>
-  </footer>
+  <div class="metric">
+    <h2 id="impactScore">0</h2>
+    <p>IMPACT</p>
+  </div>
 
-<script src="script.js"></script>
+  <div class="metric">
+    <h2 id="lengthScore">0</h2>
+    <p>LENGTH</p>
+  </div>
+
+  <button id="saveResumeBtn" type="button">Save Manual Edits</button>
+  <button id="reevaluateBtn" type="button">🔄 Re-evaluate</button>
+</footer>
+
+<section id="rewriteModal" class="modal hidden" style="display: none;">
+  <div class="modal-box">
+    <h3>Rewrite Suggestion</h3>
+
+    <p class="muted">Selected bullet</p>
+    <p id="selectedBulletText">No bullet selected.</p>
+
+    <input type="hidden" id="selectedBulletId" />
+
+    <div id="rewriteSuggestions">
+      <p>No rewrite suggestions yet.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button id="acceptRewriteBtn" type="button" disabled>Accept Suggestion</button>
+      <button id="ignoreRewriteBtn" type="button">Ignore</button>
+      <button id="closeRewriteModalBtn" type="button">Close</button>
+    </div>
+  </div>
+</section>
+
+<script src="./script.js"></script>
 </body>
 </html>
