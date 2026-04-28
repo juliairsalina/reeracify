@@ -414,16 +414,16 @@ async function runPreprocessingPlaceholder(file) {
   });
 
   if (!response.ok) {
-    let detail = "";
+    let message = `Preprocessing failed with status ${response.status}`;
 
     try {
       const errorBody = await response.json();
-      detail = errorBody.detail || errorBody.error || "";
+      message = errorBody.detail || errorBody.error || message;
     } catch {
-      detail = "";
+      // keep default message
     }
 
-    throw new Error(`Preprocessing failed: ${detail || response.status}`);
+    throw new Error(message);
   }
 
   return response.json();
@@ -847,17 +847,31 @@ if (resumeUpload) {
     }
 
     try {
-      setLoadingState("Preparing resume...");
+      setLoadingState("Preprocessing uploaded resume...");
 
+      // 1. Send uploaded resume to parser server.
+      // Parser server should extract text, build final.json,
+      // and save it to sample/final.json.
       await runPreprocessingPlaceholder(file);
 
+      setLoadingState("Evaluating parsed resume...");
+
+      // 2. After final.json is created, FastAPI reads it and evaluates.
       await evaluateFromFinalJson();
+
+      // 3. Clear file input so user can upload the same file again if needed.
+      resumeUpload.value = "";
 
     } catch (error) {
       showError(
-        "Cannot evaluate resume. Make sure backend is running and sample/final.json exists.\n\n" +
-        error.message
+        "Cannot process uploaded resume.\n\n" +
+        error.message +
+        "\n\nMake sure all servers are running:\n" +
+        "1. Parser server: http://127.0.0.1:3000\n" +
+        "2. FastAPI backend: http://127.0.0.1:8000"
       );
+
+      resumeUpload.value = "";
     }
   });
 }
