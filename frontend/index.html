@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reeracify Resume</title>
-
-  <!-- IMPORTANT: style.css must be in the same frontend folder -->
   <link rel="stylesheet" href="./style.css" />
 </head>
 
@@ -57,10 +55,6 @@
   <button id="demoBtn" class="demo-btn" type="button">
     ✨ Try with Demo Resume
   </button>
-
-  <small>
-    For now, upload can be used as a trigger after preprocessing creates sample/final.json.
-  </small>
 </section>
 
 <main id="dashboard" class="dashboard hidden">
@@ -143,12 +137,8 @@
     </div>
 
     <div id="editorContent" class="resume-text">
-      <p class="empty-state">Upload resume or evaluate final.json to view content.</p>
+      <p class="empty-state">Upload resume to view content.</p>
     </div>
-
-    <p class="hint">
-      Click highlighted bullets to see rewrite suggestions.
-    </p>
   </section>
 
   <section class="preview-panel">
@@ -156,7 +146,11 @@
       <h3>👁 PREVIEW</h3>
 
       <div class="preview-actions">
-        <button id="reevaluateFileBtn" type="button">Re-evaluate</button>
+        <button id="zoomOut" type="button">🔍−</button>
+        <span id="zoomText">48%</span>
+        <button id="zoomIn" type="button">🔍+</button>
+        <button id="downloadBtn" type="button">⬇ Download PDF</button>
+        <button id="reevaluateFileBtn" type="button">🔄 Re-evaluate</button>
       </div>
     </div>
 
@@ -174,29 +168,26 @@
 
   <div class="metric">
     <h2 id="summaryScore">0</h2>
-    <div></div>
     <p>SUMMARY</p>
   </div>
 
   <div class="metric">
     <h2 id="keywordScore">0</h2>
-    <div></div>
     <p>KEYWORDS</p>
   </div>
 
   <div class="metric">
     <h2 id="impactScore">0</h2>
-    <div></div>
     <p>IMPACT</p>
   </div>
 
   <div class="metric">
     <h2 id="lengthScore">0</h2>
-    <div></div>
     <p>LENGTH</p>
   </div>
 
   <button id="saveResumeBtn" type="button">Save Manual Edits</button>
+  <button id="reevaluateBtn" type="button">🔄 Re-evaluate</button>
 </footer>
 
 <section id="rewriteModal" class="modal hidden" style="display: none;">
@@ -220,7 +211,6 @@
   </div>
 </section>
 
-<!-- IMPORTANT: script.js must be in the same frontend folder -->
 <script src="./script.js"></script>
 </body>
 </html>

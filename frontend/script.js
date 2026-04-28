@@ -1,11 +1,8 @@
 // ============================================================
 // Backend API base URL
-// FastAPI backend should run with:
-// uvicorn app.main:app --reload
 // ============================================================
 
 const API_BASE_URL = "http://127.0.0.1:8000";
-
 
 // ============================================================
 // DOM elements
@@ -20,6 +17,7 @@ const demoBtn = document.getElementById("demoBtn");
 
 const evaluateFileBtn = document.getElementById("evaluateFileBtn");
 const reevaluateFileBtn = document.getElementById("reevaluateFileBtn");
+const reevaluateBtn = document.getElementById("reevaluateBtn");
 const saveResumeBtn = document.getElementById("saveResumeBtn");
 
 const categorySelect = document.getElementById("categorySelect");
@@ -65,6 +63,11 @@ const acceptRewriteBtn = document.getElementById("acceptRewriteBtn");
 const ignoreRewriteBtn = document.getElementById("ignoreRewriteBtn");
 const closeRewriteModalBtn = document.getElementById("closeRewriteModalBtn");
 
+// Preview controls
+const zoomInBtn = document.getElementById("zoomIn");
+const zoomOutBtn = document.getElementById("zoomOut");
+const zoomText = document.getElementById("zoomText");
+const downloadBtn = document.getElementById("downloadBtn");
 
 // ============================================================
 // Frontend state
@@ -81,10 +84,8 @@ let selectedBullet = {
 
 let selectedRewriteSuggestion = "";
 
-
 // ============================================================
 // Role / level data
-// Keep this aligned with backend role_level_rubrics.csv
 // ============================================================
 
 const jobData = {
@@ -109,7 +110,6 @@ const jobData = {
   }
 };
 
-
 // ============================================================
 // Basic helpers
 // ============================================================
@@ -126,6 +126,18 @@ function escapeHtml(value) {
 function showError(message) {
   console.error(message);
   alert(message);
+}
+
+function safeSetText(element, value) {
+  if (element) element.textContent = value;
+}
+
+function safeSetHtml(element, value) {
+  if (element) element.innerHTML = value;
+}
+
+function safeSetWidth(element, value) {
+  if (element) element.style.width = value;
 }
 
 function showDashboard() {
@@ -163,7 +175,6 @@ function getSelectedTargetLevel() {
   );
 }
 
-
 // ============================================================
 // Dropdown setup
 // ============================================================
@@ -195,7 +206,6 @@ function loadLevels() {
   });
 }
 
-
 // ============================================================
 // Loading state
 // ============================================================
@@ -203,37 +213,36 @@ function loadLevels() {
 function setLoadingState(message = "Analyzing resume...") {
   showDashboard();
 
-  atsScore.textContent = "Loading...";
-  atsStatusText.textContent = message;
+  safeSetText(atsScore, "Loading...");
+  safeSetText(atsStatusText, message);
 
-  rankScore.textContent = "Loading...";
-  competitivenessText.textContent = "Waiting for backend result...";
-  rankBar.style.width = "0%";
+  safeSetText(rankScore, "Loading...");
+  safeSetText(competitivenessText, "Waiting for backend result...");
+  safeSetWidth(rankBar, "0%");
 
-  keywordPercent.textContent = "0%";
-  formatPercent.textContent = "0%";
-  completePercent.textContent = "0%";
+  safeSetText(keywordPercent, "0%");
+  safeSetText(formatPercent, "0%");
+  safeSetText(completePercent, "0%");
 
-  keywordBar.style.width = "0%";
-  formatBar.style.width = "0%";
-  completeBar.style.width = "0%";
+  safeSetWidth(keywordBar, "0%");
+  safeSetWidth(formatBar, "0%");
+  safeSetWidth(completeBar, "0%");
 
-  keywordsBox.innerHTML = "";
-  missingKeywordsBox.innerHTML = "";
+  safeSetHtml(keywordsBox, "");
+  safeSetHtml(missingKeywordsBox, "");
 
-  evaluationReasoning.innerHTML = "<p>Analyzing resume...</p>";
-  suggestionsBox.innerHTML = "<p>Analyzing resume...</p>";
-  suggestionCount.textContent = "0";
+  safeSetHtml(evaluationReasoning, "<p>Analyzing resume...</p>");
+  safeSetHtml(suggestionsBox, "<p>Analyzing resume...</p>");
+  safeSetText(suggestionCount, "0");
 
-  editorContent.innerHTML = '<p class="empty-state">Loading resume content...</p>';
-  previewPaper.innerHTML = '<p class="empty-state">Generating preview...</p>';
+  safeSetHtml(editorContent, '<p class="empty-state">Loading resume content...</p>');
+  safeSetHtml(previewPaper, '<p class="empty-state">Generating preview...</p>');
 
-  summaryScore.textContent = "0";
-  keywordScore.textContent = "0";
-  impactScore.textContent = "0";
-  lengthScore.textContent = "0";
+  safeSetText(summaryScore, "0");
+  safeSetText(keywordScore, "0");
+  safeSetText(impactScore, "0");
+  safeSetText(lengthScore, "0");
 }
-
 
 // ============================================================
 // Backend call helper
@@ -269,7 +278,6 @@ async function callBackend(path, options = {}) {
 
   return response.json();
 }
-
 
 // ============================================================
 // Backend endpoint functions
@@ -308,10 +316,10 @@ async function requestRewriteForBullet(bulletId, bulletText) {
 
   selectedRewriteSuggestion = "";
 
-  selectedBulletIdInput.value = bulletId;
-  selectedBulletText.textContent = bulletText;
-  rewriteSuggestionsBox.innerHTML = "<p>Generating rewrite suggestions...</p>";
-  acceptRewriteBtn.disabled = true;
+  if (selectedBulletIdInput) selectedBulletIdInput.value = bulletId;
+  safeSetText(selectedBulletText, bulletText);
+  safeSetHtml(rewriteSuggestionsBox, "<p>Generating rewrite suggestions...</p>");
+  if (acceptRewriteBtn) acceptRewriteBtn.disabled = true;
 
   openRewriteModal();
 
@@ -332,9 +340,10 @@ async function requestRewriteForBullet(bulletId, bulletText) {
 
     renderRewriteSuggestions(data);
   } catch (error) {
-    rewriteSuggestionsBox.innerHTML = `
-      <p class="status-message error">${escapeHtml(error.message)}</p>
-    `;
+    safeSetHtml(
+      rewriteSuggestionsBox,
+      `<p class="status-message error">${escapeHtml(error.message)}</p>`
+    );
   }
 }
 
@@ -349,7 +358,7 @@ async function acceptRewrite() {
     return;
   }
 
-  acceptRewriteBtn.disabled = true;
+  if (acceptRewriteBtn) acceptRewriteBtn.disabled = true;
 
   const payload = {
     bullet_id: selectedBullet.id,
@@ -370,7 +379,7 @@ async function acceptRewrite() {
       await reevaluateFromFinalJson();
     }
   } catch (error) {
-    acceptRewriteBtn.disabled = false;
+    if (acceptRewriteBtn) acceptRewriteBtn.disabled = false;
     showError(error.message);
   }
 }
@@ -387,46 +396,32 @@ async function ignoreRewrite() {
   closeRewriteModal();
 }
 
-
 // ============================================================
 // Preprocessing placeholder
 // ============================================================
 
 async function runPreprocessingPlaceholder(file) {
-  // ============================================================
-  // TODO: PREPROCESSING INTEGRATION
-  //
-  // Intended final flow:
-  // frontend uploads resume file
-  // -> preprocessing extracts and structures resume
-  // -> preprocessing writes sample/final.json
-  // -> backend /evaluate-file reads sample/final.json
-  //
-  // Current temporary behavior:
-  // preprocessing is not ready yet.
-  // Upload only triggers /evaluate-file.
-  // So make sure sample/final.json already exists manually.
-  //
-  // Later expected preprocessing call:
-  //
-  // const formData = new FormData();
-  // formData.append("resume", file);
-  // formData.append("target_role", roleSelect.value);
-  // formData.append("target_level", levelSelect.value);
-  //
-  // await fetch(`${API_BASE_URL}/preprocess`, {
-  //   method: "POST",
-  //   body: formData
-  // });
-  //
-  // Then:
-  // await evaluateFromFinalJson();
-  // ============================================================
-
   console.log("Preprocessing placeholder. File selected:", file?.name);
+
+  // Later, when backend upload/preprocessing is ready:
+  /*
+  const formData = new FormData();
+  formData.append("resume", file);
+  formData.append("target_role", roleSelect.value);
+  formData.append("target_level", levelSelect.value);
+
+  const response = await fetch(`${API_BASE_URL}/preprocess`, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error("Preprocessing failed: " + response.status);
+  }
+  */
+
   return true;
 }
-
 
 // ============================================================
 // Render backend result
@@ -439,11 +434,13 @@ function renderBackendData(data) {
 
   const score = Number(data.ats_score ?? latestRuleBasedSignals.ats_score ?? 0);
 
-  atsScore.textContent = `${score}%`;
-  atsStatusText.textContent =
+  safeSetText(atsScore, `${score}%`);
+  safeSetText(
+    atsStatusText,
     score >= 80 ? "Excellent" :
     score >= 60 ? "Competitive" :
-    "Needs work";
+    "Needs work"
+  );
 
   setGauge(score);
 
@@ -464,15 +461,15 @@ function renderCompetitiveness(score, evaluation) {
   if (category === "중") numericRank = Math.max(score, 60);
   if (category === "하") numericRank = Math.min(score, 55);
 
-  rankScore.textContent = `${numericRank}/100`;
-  rankBar.style.width = `${Math.max(0, Math.min(numericRank, 100))}%`;
+  safeSetText(rankScore, `${numericRank}/100`);
+  safeSetWidth(rankBar, `${Math.max(0, Math.min(numericRank, 100))}%`);
 
   const label =
     category === "상" ? "Strong" :
     category === "중" ? "Competitive" :
     "Needs improvement";
 
-  competitivenessText.textContent = `${label} (${category})`;
+  safeSetText(competitivenessText, `${label} (${category})`);
 }
 
 function renderKeywordCards(ruleSignals) {
@@ -480,23 +477,27 @@ function renderKeywordCards(ruleSignals) {
   const presentKeywords = keywordResult.present_keywords || [];
   const missingKeywords = keywordResult.missing_keywords || [];
 
-  keywordsBox.innerHTML = "";
-  missingKeywordsBox.innerHTML = "";
+  if (keywordsBox) keywordsBox.innerHTML = "";
+  if (missingKeywordsBox) missingKeywordsBox.innerHTML = "";
 
-  if (presentKeywords.length === 0) {
-    keywordsBox.innerHTML = "<span>No keywords found</span>";
-  } else {
-    presentKeywords.forEach(keyword => {
-      keywordsBox.innerHTML += `<span>${escapeHtml(keyword)}</span>`;
-    });
+  if (keywordsBox) {
+    if (presentKeywords.length === 0) {
+      keywordsBox.innerHTML = "<span>No keywords found</span>";
+    } else {
+      presentKeywords.forEach(keyword => {
+        keywordsBox.innerHTML += `<span>${escapeHtml(keyword)}</span>`;
+      });
+    }
   }
 
-  if (missingKeywords.length === 0) {
-    missingKeywordsBox.innerHTML = "<span>None</span>";
-  } else {
-    missingKeywords.forEach(keyword => {
-      missingKeywordsBox.innerHTML += `<span>${escapeHtml(keyword)}</span>`;
-    });
+  if (missingKeywordsBox) {
+    if (missingKeywords.length === 0) {
+      missingKeywordsBox.innerHTML = "<span>None</span>";
+    } else {
+      missingKeywords.forEach(keyword => {
+        missingKeywordsBox.innerHTML += `<span>${escapeHtml(keyword)}</span>`;
+      });
+    }
   }
 }
 
@@ -523,18 +524,18 @@ function renderBreakdownScores(score, ruleSignals) {
 
   const formatScoreValue = Math.max(0, 100 - weakCount * 10 - grammarCount * 8);
 
-  keywordPercent.textContent = `${keywordScoreValue}%`;
-  formatPercent.textContent = `${formatScoreValue}%`;
-  completePercent.textContent = `${completeScoreValue}%`;
+  safeSetText(keywordPercent, `${keywordScoreValue}%`);
+  safeSetText(formatPercent, `${formatScoreValue}%`);
+  safeSetText(completePercent, `${completeScoreValue}%`);
 
-  keywordBar.style.width = `${keywordScoreValue}%`;
-  formatBar.style.width = `${formatScoreValue}%`;
-  completeBar.style.width = `${completeScoreValue}%`;
+  safeSetWidth(keywordBar, `${keywordScoreValue}%`);
+  safeSetWidth(formatBar, `${formatScoreValue}%`);
+  safeSetWidth(completeBar, `${completeScoreValue}%`);
 
-  summaryScore.textContent = completeScoreValue;
-  keywordScore.textContent = keywordScoreValue;
-  impactScore.textContent = calculateImpactScore(ruleSignals);
-  lengthScore.textContent = Math.min(100, score);
+  safeSetText(summaryScore, completeScoreValue);
+  safeSetText(keywordScore, keywordScoreValue);
+  safeSetText(impactScore, calculateImpactScore(ruleSignals));
+  safeSetText(lengthScore, Math.min(100, score));
 }
 
 function calculateImpactScore(ruleSignals) {
@@ -567,16 +568,25 @@ function renderSuggestions(ruleSignals, evaluation) {
     }
   });
 
+  (evaluation.weak_bullets || []).forEach(item => {
+    suggestions.push(item.reason || `Weak bullet: ${item.text}`);
+  });
+
   (evaluation.improvement_priorities || []).forEach(priority => {
     suggestions.push(priority);
   });
 
-  evaluationReasoning.innerHTML = evaluation.reasoning
-    ? `<p>${escapeHtml(evaluation.reasoning)}</p>`
-    : "<p>No evaluation reasoning returned.</p>";
+  safeSetHtml(
+    evaluationReasoning,
+    evaluation.reasoning
+      ? `<p>${escapeHtml(evaluation.reasoning)}</p>`
+      : "<p>No evaluation reasoning returned.</p>"
+  );
 
-  suggestionsBox.innerHTML = "";
-  suggestionCount.textContent = suggestions.length;
+  if (suggestionsBox) suggestionsBox.innerHTML = "";
+  safeSetText(suggestionCount, suggestions.length);
+
+  if (!suggestionsBox) return;
 
   if (suggestions.length === 0) {
     suggestionsBox.innerHTML = "<p>No major issues found.</p>";
@@ -587,7 +597,6 @@ function renderSuggestions(ruleSignals, evaluation) {
     suggestionsBox.innerHTML += `<p>⚠ ${escapeHtml(item)}</p>`;
   });
 }
-
 
 // ============================================================
 // Render resume bullets
@@ -609,6 +618,8 @@ function renderResumeEditor(ruleSignals, evaluation) {
     if (item.id) weakBulletIds.add(item.id);
   });
 
+  if (!editorContent) return;
+
   if (allBullets.length === 0) {
     editorContent.innerHTML = '<p class="empty-state">No bullets found in final.json.</p>';
     return;
@@ -616,6 +627,9 @@ function renderResumeEditor(ruleSignals, evaluation) {
 
   const experienceBullets = allBullets.filter(item => item.section === "experience");
   const projectBullets = allBullets.filter(item => item.section === "projects");
+  const otherBullets = allBullets.filter(
+    item => item.section !== "experience" && item.section !== "projects"
+  );
 
   let html = "";
 
@@ -635,6 +649,14 @@ function renderResumeEditor(ruleSignals, evaluation) {
     html += `</div>`;
   }
 
+  if (otherBullets.length > 0) {
+    html += `<div class="resume-section"><h2>Other</h2>`;
+    otherBullets.forEach(bullet => {
+      html += renderBulletHtml(bullet, weakBulletIds);
+    });
+    html += `</div>`;
+  }
+
   editorContent.innerHTML = html;
 
   document.querySelectorAll(".resume-bullet").forEach(element => {
@@ -649,31 +671,35 @@ function renderResumeEditor(ruleSignals, evaluation) {
 
 function renderBulletHtml(bullet, weakBulletIds) {
   const isWeak = weakBulletIds.has(bullet.id);
-  const className = isWeak ? "resume-bullet weak" : "resume-bullet";
+  const className = isWeak ? "resume-bullet weak highlight" : "resume-bullet";
 
   return `
-    <span
-      class="${className}"
-      data-bullet-id="${escapeHtml(bullet.id)}"
-      data-bullet-text="${escapeHtml(bullet.text)}"
-      title="Click to rewrite this bullet"
-    >
-      ${escapeHtml(bullet.text)}
-    </span>
+    <p>
+      <span
+        class="${className}"
+        data-bullet-id="${escapeHtml(bullet.id)}"
+        data-bullet-text="${escapeHtml(bullet.text)}"
+        title="Click to rewrite this bullet"
+      >
+        ${escapeHtml(bullet.text)}
+      </span>
+    </p>
   `;
 }
-
 
 // ============================================================
 // Rewrite modal
 // ============================================================
 
 function openRewriteModal() {
+  if (!rewriteModal) return;
   rewriteModal.style.display = "flex";
   rewriteModal.classList.remove("hidden");
 }
 
 function closeRewriteModal() {
+  if (!rewriteModal) return;
+
   rewriteModal.style.display = "none";
   rewriteModal.classList.add("hidden");
 
@@ -683,18 +709,21 @@ function closeRewriteModal() {
   };
 
   selectedRewriteSuggestion = "";
-  selectedBulletIdInput.value = "";
-  selectedBulletText.textContent = "No bullet selected.";
-  rewriteSuggestionsBox.innerHTML = "<p>No rewrite suggestions yet.</p>";
-  acceptRewriteBtn.disabled = true;
+
+  if (selectedBulletIdInput) selectedBulletIdInput.value = "";
+  safeSetText(selectedBulletText, "No bullet selected.");
+  safeSetHtml(rewriteSuggestionsBox, "<p>No rewrite suggestions yet.</p>");
+  if (acceptRewriteBtn) acceptRewriteBtn.disabled = true;
 }
 
 function renderRewriteSuggestions(data) {
   const suggestions = data.rewrite_suggestions || [];
 
+  if (!rewriteSuggestionsBox) return;
+
   rewriteSuggestionsBox.innerHTML = "";
   selectedRewriteSuggestion = "";
-  acceptRewriteBtn.disabled = true;
+  if (acceptRewriteBtn) acceptRewriteBtn.disabled = true;
 
   if (suggestions.length === 0) {
     rewriteSuggestionsBox.innerHTML = "<p>No rewrite suggestions returned.</p>";
@@ -734,13 +763,12 @@ function renderRewriteSuggestions(data) {
 
       card.classList.add("selected");
       selectedRewriteSuggestion = suggestion;
-      acceptRewriteBtn.disabled = false;
+      if (acceptRewriteBtn) acceptRewriteBtn.disabled = false;
     });
 
     rewriteSuggestionsBox.appendChild(card);
   });
 }
-
 
 // ============================================================
 // Manual save placeholder
@@ -753,6 +781,49 @@ function saveManualEdits() {
   );
 }
 
+// ============================================================
+// Preview controls: zoom in, zoom out, download/print
+// ============================================================
+
+function updateZoomText(currentZoom) {
+  if (zoomText) {
+    zoomText.textContent = Math.round(48 * currentZoom) + "%";
+  }
+}
+
+if (zoomInBtn && previewPaper) {
+  zoomInBtn.addEventListener("click", function () {
+    let currentZoom = Number(previewPaper.dataset.zoom || 1);
+    currentZoom += 0.1;
+
+    previewPaper.dataset.zoom = currentZoom;
+    previewPaper.style.transform = `scale(${currentZoom})`;
+    previewPaper.style.transformOrigin = "top center";
+
+    updateZoomText(currentZoom);
+  });
+}
+
+if (zoomOutBtn && previewPaper) {
+  zoomOutBtn.addEventListener("click", function () {
+    let currentZoom = Number(previewPaper.dataset.zoom || 1);
+    currentZoom -= 0.1;
+
+    if (currentZoom < 0.6) currentZoom = 0.6;
+
+    previewPaper.dataset.zoom = currentZoom;
+    previewPaper.style.transform = `scale(${currentZoom})`;
+    previewPaper.style.transformOrigin = "top center";
+
+    updateZoomText(currentZoom);
+  });
+}
+
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", function () {
+    window.print();
+  });
+}
 
 // ============================================================
 // Event listeners
@@ -763,7 +834,7 @@ if (resumeUpload) {
     const file = resumeUpload.files[0];
     if (!file) return;
 
-    if (!roleSelect.value || !levelSelect.value) {
+    if (!roleSelect?.value || !levelSelect?.value) {
       alert("Please select role and level first.");
       resumeUpload.value = "";
       return;
@@ -772,10 +843,8 @@ if (resumeUpload) {
     try {
       setLoadingState("Preparing resume...");
 
-      // Temporary until preprocessing is connected.
       await runPreprocessingPlaceholder(file);
 
-      // Current backend reads sample/final.json.
       await evaluateFromFinalJson();
 
     } catch (error) {
@@ -803,6 +872,21 @@ if (reevaluateFileBtn) {
       await reevaluateFromFinalJson();
     } catch (error) {
       showError(error.message);
+    }
+  });
+}
+
+if (reevaluateBtn) {
+  reevaluateBtn.addEventListener("click", async function () {
+    try {
+      await reevaluateFromFinalJson();
+    } catch (error) {
+      showError(
+        "Cannot re-evaluate. Make sure FastAPI is running on " +
+        API_BASE_URL +
+        "\n\n" +
+        error.message
+      );
     }
   });
 }
@@ -852,7 +936,6 @@ if (demoBtn) {
   });
 }
 
-
 // ============================================================
 // Initialize page
 // ============================================================
@@ -860,7 +943,6 @@ if (demoBtn) {
 function initPage() {
   loadRoles();
 
-  // Important: force modal hidden on page load.
   if (rewriteModal) {
     rewriteModal.style.display = "none";
     rewriteModal.classList.add("hidden");
@@ -873,6 +955,12 @@ function initPage() {
   if (bottomMetrics) {
     bottomMetrics.classList.add("hidden");
   }
+
+  if (previewPaper) {
+    previewPaper.dataset.zoom = previewPaper.dataset.zoom || 1;
+  }
+
+  updateZoomText(Number(previewPaper?.dataset.zoom || 1));
 }
 
 initPage();
