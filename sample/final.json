@@ -1,122 +1,120 @@
 {
   "target_role": "Data Analyst",
   "target_level": "Entry-level",
-  "name": "NUR MUSHIRA BINTI MAZNI",
-  "email": "mushiramazni@gmail.com",
-  "phone": "+8210-64534791",
+  "name": "JULIA IRSALINA BINTI MOHAMAD SANI",
+  "email": "juliairsalinasani@gmail.com",
+  "phone": "+60 11-1096-8198",
   "address": null,
-  "summary": "NUR MUSHIRA BINTI MAZNI Melaka, Malaysia | +82 10-64534791 | mushiramazni@gmail.com",
+  "summary": "JULIA IRSALINA BINTI MOHAMAD SANI Linked-in: linkedin.com/in/julia-irsalina Email: juliairsalinasani@gmail.com Mobile: +60 11-1096-8198 | +82 10-7684-6745 Based in: Malaysia | Seoul, South Korea B.S. Candidate in Data Science, Korea University Available for a 9-week Summer 2026 Data Science Internship (29 June - 28 August)",
   "education": [
     {
       "school": "Korea University",
-      "degree": "",
-      "field": "",
+      "degree": "B.S.",
+      "field": "Data Science",
       "start_date": "",
       "end_date": "",
-      "gpa": "3.44"
+      "gpa": "3.86/4.50"
     },
     {
-      "school": "Korean University",
-      "degree": "",
-      "field": "",
+      "school": "UniKL MIIT",
+      "degree": "B.S.",
+      "field": "Data Science",
       "start_date": "",
       "end_date": "",
-      "gpa": "3.97"
+      "gpa": "3.86/4.50"
     }
   ],
-  "experience": [
-    {
-      "company": "",
-      "role": "Library Assistant - Gangsa Primary School, Melaka Jun 2021 - Jul 2021",
-      "start_date": "",
-      "end_date": "",
-      "bullets": [
-        "Organized and maintained library books to ensure easy access for students.",
-        "Managed the rental and return system for books.",
-        "Kept the library clean and orderly to provide a welcoming environment."
-      ]
-    },
-    {
-      "company": "",
-      "role": "Association Committee - Media Bureau of PPMK",
-      "start_date": "",
-      "end_date": "",
-      "bullets": [
-        "Captured photos during PPMK activities for documentation and social media.",
-        "Designed visual content for PPMK's official Instagram page."
-      ]
-    },
-    {
-      "company": "",
-      "role": "Medic Team - Religion and Welfare Bureau of PPMK Mar 2025 - Dec 2025",
-      "start_date": "",
-      "end_date": "",
-      "bullets": [
-        "Attended first aid training classes under Red Crescent Korea.",
-        "Supported students during PPMK physical activity events by delivering basic medical assistance."
-      ]
-    },
-    {
-      "company": "",
-      "role": "Event Crew - Persatuan Pelajar Malaysia Korea (PPMK) Nov 2023 - Nov 2025",
-      "start_date": "",
-      "end_date": "",
-      "bullets": [
-        "Collaborated with team members to organize and execute annual dinner events for three consecutive years.",
-        "Supported event logistics including decoration, certificate handling, and (upcoming) technical team duties.",
-        "Helped ensure smooth execution of PPMK's annual dinner events."
-      ]
-    },
-    {
-      "company": "",
-      "role": "Dance Crew - Malaysian Student Dance Club (MSDC) Mar 2023 - Dec 2025",
-      "start_date": "",
-      "end_date": "",
-      "bullets": [
-        "Active member of the dance crew, performing at sports events, cultural nights, and student gatherings.",
-        "Represented the club in performances to promote Malaysian culture among the student community."
-      ]
-    },
-    {
-      "company": "",
-      "role": "Facilitator - Al Storytelling & Media Workshop",
-      "start_date": "",
-      "end_date": "",
-      "bullets": [
-        "Guided 25 primary school students in creating storytelling books using Al tools such as ChatGPT and Canva AI."
-      ]
-    }
-  ],
+  "experience": [],
   "projects": [
     {
-      "name": "Deep Learning - CBAM Attention-based Crowd Detection",
+      "name": "Scalable Weakly Supervised Product Classification (531 Classes)",
+      "technologies": [],
+      "bullets": []
+    },
+    {
+      "name": "Big Data Analytics, Korea University",
+      "technologies": [],
+      "bullets": []
+    },
+    {
+      "name": "",
       "technologies": [],
       "bullets": [
-        "Proposed a global Gaussian kernel for more uniform ground-truth supervision and integrated CBAM attention between VGG-16 front-end and dilated convolution back-end of CSRNet.",
-        "Designed a stable training pipeline with optimized hyperparameters to ensure effective model convergence. Evaluated on the ShanghaiTech Part A dataset, showing improved density map quality and robustness to scale variation."
+        "Built a hierarchical multi-label classification system using BERT + Graph Attention for a 531-class taxonomy under weak supervision",
+        "Increased F1 score from 0.005 to 0.246 and reduced hierarchy violation rate from 0.64 to 0.14 by implementing core-aware and confidence-weighted training methods.",
+        "Developed and executed machine learning experiments on AWS SageMaker to support scalable cloud-based model development.",
+        "Stress Detection - Dual-Branch VAE-LSTM with Multi-head Attention Sep 2025 - Dec 2025"
       ]
     },
     {
-      "name": "Introduction to Computer Vision - TrOCR Receipt Scanner",
+      "name": "Advanced Machine Learning, Korea University :unselected: · Developed an unsupervised dual-branch VAE-LSTM on WESAD signals, improving F1-score by 40%+ vs. MA-VAE :unselected: · Reduced model parameters by 77% (10.1M -> 2.26M) while enabling real-time inference (<50ms)",
       "technologies": [],
       "bullets": [
-        "Integrated TrOCR (Vision Transformer + autoregressive decoder) for robust text extraction from handwritten and complex real-world receipts.",
-        "Applied CLAHE contrast enhancement and Hough Transform-based affine deskewing to handle faded and warped receipt inputs.",
-        "Arranged preprocessed images into LayoutLMv3 for structured information extraction, targeting automated expense tracking and claims processing."
+        "Performed signal preprocessing and exploratory data analysis on WESAD physiological data, including normalization, sliding-window segmentation, and extraction of 55+ features using NeuroKit2 to improve model robustness"
       ]
     },
     {
-      "name": "RE:ALThon GDG on Campus - Al Fishing Compliance App (Excellence Award)",
+      "name": ". Interactive Yearbook Platform",
+      "technologies": [],
+      "bullets": []
+    },
+    {
+      "name": "Human-Computer Interaction, Korea University",
       "technologies": [],
       "bullets": [
-        "Contributed to sourcing and integrating public datasets, preprocessing data to ensure compatibility and enable system functionality.",
-        "Built a Flutter mobile app integrating Google Gemini API to identify fish species from camera images and determine protected/catchable status in real time.",
-        "Implemented GPS-based fishing restriction zone alerts using Naver Maps API, promoting awareness of marine protected areas."
+        "Designed and prototyped a digital platform with 11+ user-centered features, translating structured user research into iterative UI/UX improvements",
+        "Crowd Detection - CSRNet + CBAM"
+      ]
+    },
+    {
+      "name": "Deep Learning, Korea University",
+      "technologies": [],
+      "bullets": []
+    },
+    {
+      "name": ":unselected: :unselected: :unselected: :unselected: :unselected: :unselected: :unselected: :unselected:",
+      "technologies": [],
+      "bullets": [
+        "Addressed scale variation in ShanghaiTech Dataset crowd density estimation using CSRNet + CBAM, reducing MAE to 100, improved SSIM to 0.576, and increase validation accuracy 15.8% -> 79.7%",
+        "Proposed a Global Gaussian kernel and hybrid loss (MSE + SSIM + Count), reducing MAE by 76.1%"
       ]
     }
   ],
   "skills": [
-    "teamwork"
+    "Anomaly Detection",
+    "Azure",
+    "CNNs",
+    "Cetusan Crew Jan 2024 - Nov 2025",
+    "Cloud & Tools: AWS SageMaker",
+    "Colab",
+    "Deep Learning",
+    "Department of Computer Science",
+    "English (Professional)",
+    "Frameworks: PyTorch",
+    "GAT",
+    "Global Service Centre",
+    "Korea University",
+    "Korean (TOPIK Level 4)",
+    "LEADERSHIP & ACTIVITIES",
+    "LSTMs",
+    "Languages: Malay (Native)",
+    "Machine Learning",
+    "Matplotlib",
+    "NeuroKit2",
+    "NumPy",
+    "Pandas",
+    "Programming: C",
+    "PyTorch",
+    "Python",
+    "SQL",
+    "Time-Series Modeling",
+    "Transformers",
+    "VAEs",
+    "VS Code",
+    "Weak Supervision",
+    "• Committee Member",
+    "• Editor",
+    "• Mentor"
   ],
   "awards": []
 }

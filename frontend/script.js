@@ -3,7 +3,6 @@
 // ============================================================
 
 const API_BASE_URL = "http://127.0.0.1:8000";
-const PARSER_API_BASE_URL = "http://127.0.0.1:3000";
 
 // ============================================================
 // DOM elements
@@ -408,7 +407,7 @@ async function runPreprocessingPlaceholder(file) {
   formData.append("target_role", roleSelect.value || "Data Analyst");
   formData.append("target_level", levelSelect.value || "Entry-level");
 
-  const response = await fetch(`${PARSER_API_BASE_URL}/upload`, {
+  const response = await fetch(`${API_BASE_URL}/preprocess`, {
     method: "POST",
     body: formData
   });
@@ -418,9 +417,9 @@ async function runPreprocessingPlaceholder(file) {
 
     try {
       const errorBody = await response.json();
-      message = errorBody.detail || errorBody.error || message;
+      message = errorBody.detail || message;
     } catch {
-      // keep default message
+      // keep default
     }
 
     throw new Error(message);
@@ -428,6 +427,7 @@ async function runPreprocessingPlaceholder(file) {
 
   return response.json();
 }
+
 
 // ============================================================
 // Render backend result

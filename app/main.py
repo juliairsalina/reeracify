@@ -14,6 +14,16 @@ from app.rule_scoring import run_rule_based_scoring
 
 from fastapi.middleware.cors import CORSMiddleware
 
+import shutil
+from tempfile import NamedTemporaryFile
+
+from fastapi import File, Form, UploadFile
+from azure.ai.formrecognizer import DocumentAnalysisClient
+from azure.core.credentials import AzureKeyCredential
+
+from app.config import settings
+from app.preprocessing import parse_resume_text
+
 
 # ============================================================
 # File path
@@ -501,6 +511,62 @@ def reevaluate_file() -> dict[str, Any]:
         raise HTTPException(
             status_code=500,
             detail=f"Reevaluation from sample/final.json failed: {str(exc)}",
+        ) from exc
+    
+@app.post("/preprocess")
+async def preprocess_resume(
+    resume: UploadFile = File(...),
+    target_role: str = Form("Data Analyst"),
+    target_level: str = Form("Entry-level"),
+) -> dict[str, Any]:
+    """
+    Upload resume file, extract text using Azure Document Intelligence,
+    parse into final.json structure, and save to sample/final.json.
+    """
+    try:
+        if not settings.AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT:
+            raise ValueError("Missing AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT in app/.env")
+
+        if not settings.AZURE_DOCUMENT_INTELLIGENCE_KEY:
+            raise ValueError("Missing AZURE_DOCUMENT_INTELLIGENCE_KEY in app/.env")
+
+        client = DocumentAnalysisClient(
+            endpoint=settings.AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT,
+            credential=AzureKeyCredential(settings.AZURE_DOCUMENT_INTELLIGENCE_KEY),
+        )
+
+        with NamedTemporaryFile(delete=False) as temp_file:
+            shutil.copyfileobj(resume.file, temp_file)
+            temp_path = temp_file.name
+
+        with open(temp_path, "rb") as file:
+            poller = client.begin_analyze_document(
+                "prebuilt-document",
+                document=file,
+            )
+
+        result = poller.result()
+        extracted_text = result.content or ""
+
+        final_json = parse_resume_text(
+            text=extracted_text,
+            target_role=target_role,
+            target_level=target_level,
+        )
+
+        resume_input = ResumeInput.model_validate(final_json)
+        write_final_json(resume_input)
+
+        return {
+            "status": "parsed",
+            "message": "Resume parsed and saved to sample/final.json.",
+            "final_json": resume_input.model_dump(),
+        }
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Preprocessing failed: {str(exc)}",
         ) from exc
 
 

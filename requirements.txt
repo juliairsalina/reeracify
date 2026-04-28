@@ -20,3 +20,6 @@ language-tool-python
 agent-framework-foundry 
 azure-identity 
 pydantic-settings
+
+azure-ai-formrecognizer 
+python-multipart
