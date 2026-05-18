@@ -114,7 +114,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative z-10 flex min-h-[78vh] flex-col items-center px-4 pb-8 pt-1 text-center md:px-8">
         {/* Logo image */}
-        <div className="-mt-10 flex justify-center">
+        <div className="mt-10 flex justify-center">
           <Image
             src="/reeracify-logo.png"
             alt="Reeracify"
@@ -125,7 +125,7 @@ export default function HomePage() {
           />
         </div>
 
-        <p className="-mt-32 text-[10px] font-semibold text-white/90 sm:text-[10px] md:text-[15px]">
+        <p className="mt-8 text-[10px] font-semibold text-white/90 sm:text-[10px] md:text-[15px]">
           Build a resume that feels clear, confident, and ready.
         </p>
 
