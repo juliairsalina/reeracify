@@ -28,6 +28,7 @@ import {
   BarChart3,
   Target,
 } from "lucide-react";
+import { resume } from "react-dom/server";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
@@ -58,7 +59,7 @@ export default function EditResumePage() {
 
   const [resumeBullets, setResumeBullets] = useState([]);
   const [weakBulletIds, setWeakBulletIds] = useState(new Set());
-  const [backendSuggestions, setBackendSuggestions] = useState([]);
+  const [backendSuggestions, setBackendSuggestions] = useState(null);
   const [activeSuggestion, setActiveSuggestion] = useState("summary");
 
   const [latestRuleBasedSignals, setLatestRuleBasedSignals] = useState(null);
@@ -336,6 +337,10 @@ export default function EditResumePage() {
         method: "POST",
         body: formData,
       });
+
+      if(data.final_json){
+        setResumeData(data.final_json);
+      }
 
       renderBackendData(data);
     } catch (error) {
@@ -682,6 +687,7 @@ export default function EditResumePage() {
                 className="h-[1123px] w-[794px] shrink-0 rounded-[3px] bg-white px-16 py-12 text-black shadow-[0_30px_90px_rgba(0,0,0,0.22)] print:shadow-none"
               >
                 <ResumeDocument
+                  resumeData = {resumeData}
                   activeSuggestion={activeSuggestion}
                   currentSuggestion={currentSuggestion}
                   resumeBullets={resumeBullets}
@@ -925,6 +931,7 @@ function HighlightBox({ active, children, onClick }) {
 }
 
 function ResumeDocument({
+  resumeData,
   activeSuggestion,
   currentSuggestion,
   resumeBullets = [],
@@ -939,6 +946,146 @@ function ResumeDocument({
       return acc;
     }, {});
   }, [resumeBullets]);
+
+  if (resumeData) {
+  return (
+
+    <article className="text-[12px] leading-[1.45]">
+
+      {/* Header */}
+      <div className="border-b pb-3 text-center">
+        <h1 className="text-[22px] font-black">
+          {resumeData.name}
+        </h1>
+
+        <p className="mt-1 text-[11px] text-gray-600">
+          {resumeData.email}
+          {" • "}
+          {resumeData.phone}
+        </p>
+      </div>
+
+      {/* Summary */}
+      <section className="mt-5">
+        <h2 className="border-b border-black pb-[2px] text-[11px] font-black uppercase">
+          Summary
+        </h2>
+
+        <p className="mt-2">
+          {resumeData.summary}
+        </p>
+      </section>
+
+      {/* Skills */}
+      <section className="mt-5">
+        <h2 className="border-b border-black pb-[2px] text-[11px] font-black uppercase">
+          Skills
+        </h2>
+
+        <p className="mt-2">
+          {(resumeData.skills || []).join(" • ")}
+        </p>
+      </section>
+
+      {/* Education */}
+      <section className="mt-5">
+        <h2 className="border-b border-black pb-[2px] text-[11px] font-black uppercase">
+          Education
+        </h2>
+
+        {(resumeData.education || []).map((edu, index) => (
+
+          <div key={index} className="mt-3">
+
+            <div className="flex justify-between">
+              <h3 className="font-bold">
+                {edu.school}
+              </h3>
+
+              <span>
+                {edu.start_date} - {edu.end_date}
+              </span>
+            </div>
+
+            <p>
+              {edu.degree} in {edu.field}
+            </p>
+
+          </div>
+
+        ))}
+      </section>
+
+      {/* Experience */}
+      <section className="mt-5">
+        <h2 className="border-b border-black pb-[2px] text-[11px] font-black uppercase">
+          Experience
+        </h2>
+
+        {(resumeData.experience || []).map((exp, index) => (
+
+          <div key={index} className="mt-3">
+
+            <div className="flex justify-between">
+              <div>
+                <h3 className="font-bold">
+                  {exp.role}
+                </h3>
+
+                <p>{exp.company}</p>
+              </div>
+
+              <span>
+                {exp.start_date} - {exp.end_date}
+              </span>
+            </div>
+
+            <ul className="mt-2 list-disc pl-5">
+              {(exp.bullets || []).map((bullet, i) => (
+                <li key={i}>{bullet}</li>
+              ))}
+            </ul>
+
+          </div>
+
+        ))}
+      </section>
+
+      {/* Projects */}
+      <section className="mt-5">
+        <h2 className="border-b border-black pb-[2px] text-[11px] font-black uppercase">
+          Projects
+        </h2>
+
+        {(resumeData.projects || []).map((project, index) => (
+
+          <div key={index} className="mt-3">
+
+            <div className="flex justify-between">
+              <h3 className="font-bold">
+                {project.name}
+              </h3>
+
+              <span>
+                {project.start_date} - {project.end_date}
+              </span>
+            </div>
+
+            <ul className="mt-2 list-disc pl-5">
+              {(project.bullets || []).map((bullet, i) => (
+                <li key={i}>{bullet}</li>
+              ))}
+            </ul>
+
+          </div>
+
+        ))}
+      </section>
+
+    </article>
+
+  );
+}
 
   if (resumeBullets.length > 0) {
     return (
