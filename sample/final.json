@@ -41,8 +41,8 @@
       "technologies": [],
       "bullets": [
         "Built a hierarchical multi-label classification system using BERT + Graph Attention for a 531-class taxonomy under weak supervision",
-        "Increased F1 score from 0.005 to 0.246 and reduced hierarchy violation rate from 0.64 to 0.14 by implementing core-aware and confidence-weighted training methods.",
-        "Developed and executed machine learning experiments on AWS SageMaker to support scalable cloud-based model development.",
+        "Improved F1 from 0.005 -> 0.246 and reduced hierarchy violation rate from 0.64 -> 0.14 via core-aware and confidence-weighted training",
+        "Trained and managed experiments on AWS SageMaker for scalable cloud-based ML development",
         "Stress Detection - Dual-Branch VAE-LSTM with Multi-head Attention Sep 2025 - Dec 2025"
       ]
     },
