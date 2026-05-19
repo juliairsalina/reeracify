@@ -42,6 +42,61 @@ export default function EditResumePage() {
   const [zoom, setZoom] = useState(0.72);
 
   const [resumeFile, setResumeFile] = useState(null);
+  const [resumeData, setResumeData] = useState({
+        name: "John Doe",
+        email: "john@email.com",
+        phone: "+82 10-1234-5678",
+
+        summary:
+          "Computer Science student passionate about AI and backend systems.",
+
+        skills: [
+          "Python",
+          "FastAPI",
+          "React",
+          "SQL",
+          "Machine Learning"
+        ],
+
+        education: [
+          {
+            school: "Korea University",
+            degree: "Bachelor of Computer Science",
+            field: "Artificial Intelligence",
+            start_date: "2022",
+            end_date: "2026"
+          }
+        ],
+
+        experience: [
+          {
+            role: "Backend Developer Intern",
+            company: "ABC Tech",
+            start_date: "Jun 2025",
+            end_date: "Aug 2025",
+
+            bullets: [
+              "Developed REST APIs using FastAPI.",
+              "Improved query performance by 30%.",
+              "Integrated OCR preprocessing pipeline."
+            ]
+          }
+        ],
+
+        projects: [
+          {
+            name: "AI Resume Optimizer",
+            start_date: "2025",
+            end_date: "2025",
+
+            bullets: [
+              "Built ATS evaluation system.",
+              "Implemented AI rewrite suggestions.",
+              "Designed resume preview renderer."
+            ]
+          }
+        ]
+      });
   const [vacancyLink, setVacancyLink] = useState("");
 
   const [atsScoreValue, setAtsScoreValue] = useState(0);
@@ -59,7 +114,7 @@ export default function EditResumePage() {
 
   const [resumeBullets, setResumeBullets] = useState([]);
   const [weakBulletIds, setWeakBulletIds] = useState(new Set());
-  const [backendSuggestions, setBackendSuggestions] = useState(null);
+  const [backendSuggestions, setBackendSuggestions] = useState([]);
   const [activeSuggestion, setActiveSuggestion] = useState("summary");
 
   const [latestRuleBasedSignals, setLatestRuleBasedSignals] = useState(null);
@@ -76,7 +131,7 @@ export default function EditResumePage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const suggestions = backendSuggestions;
+  const suggestions = backendSuggestions || [];
 
   const currentSuggestion =
     suggestions.find((item) => item.id === activeSuggestion) || suggestions[0];
@@ -327,7 +382,7 @@ export default function EditResumePage() {
     }
 
     try {
-      setLoadingState("Reading vacancy link and evaluating resume...");
+      setLoadingState("Pre-processing uploaded...");
 
       const formData = new FormData();
       formData.append("resume", resumeFile);

@@ -4,22 +4,22 @@ export default function ContactPage() {
       <h1 className="text-4xl font-bold">Our Team</h1>
 
       <p className="mt-3 text-lg">
-        Meet the people behind Reeracify.
+        Meet the PowerPuffGirls behind Reeracify.
       </p>
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         <div className="rounded-3xl bg-white/50 p-6 shadow-lg">
-          <h2 className="text-xl font-bold">Najwa</h2>
+          <h2 className="text-xl font-bold">Mushira</h2>
           <p className="mt-2">Frontend / Resume AI</p>
         </div>
 
         <div className="rounded-3xl bg-white/50 p-6 shadow-lg">
-          <h2 className="text-xl font-bold">Team Member</h2>
+          <h2 className="text-xl font-bold">Emira</h2>
           <p className="mt-2">Backend / Database</p>
         </div>
 
         <div className="rounded-3xl bg-white/50 p-6 shadow-lg">
-          <h2 className="text-xl font-bold">Team Member</h2>
+          <h2 className="text-xl font-bold">Julia</h2>
           <p className="mt-2">AI Evaluation Agent</p>
         </div>
       </div>
